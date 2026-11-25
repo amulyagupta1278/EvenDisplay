@@ -6,14 +6,19 @@
   <title>EvenDisplay — Free MacBook Dim Vertical Band Fix &amp; Screen Uniformity Tool</title>
   <meta name="description" content="Visually even out dim vertical bands and uneven patches on MacBook Pro and MacBook Air displays. Free 50% gray screen uniformity test, IPS pixel cleaner sweep, and 100% reversible macOS menu-bar overlay." />
   <meta name="keywords" content="MacBook Pro dim vertical bands fix, MacBook screen uniformity test, MacBook pixel cleaner, MacBook vertical dark bands workaround, macOS screen compensator, EvenDisplay" />
+  <meta name="theme-color" content="#0c0e12" />
   <link rel="canonical" href="https://evendisplay.amulyagupta.in/" />
   <link rel="icon" type="image/png" href="assets/icon.png" />
+
+  <!-- Verification & Analytics Slots (ready for Step 2: Google Search Console, GA4, Meta Domain Verification & Pixel) -->
+  <!-- <meta name="google-site-verification" content="YOUR_GOOGLE_VERIFICATION_TOKEN" /> -->
+  <!-- <meta name="facebook-domain-verification" content="YOUR_META_DOMAIN_TOKEN" /> -->
 
   <!-- OpenGraph & Twitter Social Cards -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="EvenDisplay" />
   <meta property="og:title" content="EvenDisplay — Free MacBook Dim Vertical Band Fix &amp; Screen Uniformity Tool" />
-  <meta property="og:description" content="Drag two precision compensation bands over worn MacBook LCD columns, test across 50% gray and RGB, and undo everything in one click. Free macOS app + browser studio." />
+  <meta property="og:description" content="Drag two hover-only compensation bands over worn MacBook LCD columns, verify across 9 colors, and undo everything in one keystroke. Free macOS app + browser studio." />
   <meta property="og:url" content="https://evendisplay.amulyagupta.in/" />
   <meta property="og:image" content="https://evendisplay.amulyagupta.in/assets/og-card.png" />
   <meta property="og:image:width" content="1200" />
@@ -92,49 +97,84 @@
 
   <style>
     :root {
-      --bg: #f5f6f8;
-      --surface: #ffffff;
-      --surface-dark: #111318;
+      /* Cold-luxury optical instrument palette — one singular cobalt accent */
+      --bg-light: #f4f5f7;
+      --bg-surface: #ffffff;
+      --bg-lab: #0c0e12;
+      --bg-lab-elevated: #14171f;
       --ink: #0f131a;
-      --muted: #525b6b;
-      --border: #dfe3ea;
-      --accent: #2563eb;
-      --accent-hover: #1d4ed8;
-      --radius: 14px;
-      --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
-      --mono: ui-monospace, "SF Mono", Menlo, monospace;
+      --ink-muted: #4b5565;
+      --ink-lab: #f3f5f8;
+      --ink-lab-muted: #98a2b3;
+      --hairline: #d9dde5;
+      --hairline-lab: rgba(255, 255, 255, 0.12);
+      --accent: #1d4ed8;
+      --accent-hover: #1e40af;
+      --accent-bright: #3b82f6;
+      --radius-ctrl: 8px;
+      --radius-frame: 12px;
+      --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", system-ui, sans-serif;
+      --font-mono: ui-monospace, "SF Mono", Menlo, Monaco, monospace;
     }
 
-    * { box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      background: var(--bg);
+      background: var(--bg-light);
       color: var(--ink);
-      font-family: var(--font);
+      font-family: var(--font-sans);
       -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
       line-height: 1.55;
+      overflow-x: clip;
     }
 
     a { color: inherit; text-decoration: none; }
-    .container { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
 
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 40;
-      height: 64px;
-      background: rgba(245, 246, 248, 0.90);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
+    /* Accessible focus outlines */
+    :focus-visible {
+      outline: 2px solid var(--accent-bright);
+      outline-offset: 2px;
     }
 
-    .nav-inner {
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 8px;
+      background: var(--ink);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: var(--radius-ctrl);
+      z-index: 100;
+      font-size: 13px;
+    }
+    .skip-link:focus { left: 16px; }
+
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Single-line 64px Header */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      height: 64px;
+      background: rgba(244, 245, 247, 0.90);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .nav-bar {
       height: 64px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 20px;
+      gap: 24px;
     }
 
     .brand {
@@ -142,54 +182,84 @@
       align-items: center;
       gap: 10px;
       font-weight: 650;
-      font-size: 15.5px;
+      font-size: 15px;
       letter-spacing: -0.02em;
       white-space: nowrap;
     }
 
-    .brand img { width: 28px; height: 28px; border-radius: 6px; display: block; }
-
-    nav.links {
-      display: flex;
-      align-items: center;
-      gap: 26px;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--muted);
+    .brand img {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      display: block;
     }
 
-    nav.links a:hover { color: var(--ink); }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--ink-muted);
+    }
 
+    .nav-links a {
+      padding: 4px 0;
+      transition: color 0.14s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+
+    /* Consistent Button System (single-line, high contrast, tactile active push) */
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
       padding: 10px 18px;
-      border-radius: 10px;
-      font-size: 14px;
+      border-radius: var(--radius-ctrl);
+      font-family: inherit;
+      font-size: 13.5px;
       font-weight: 600;
       white-space: nowrap;
       border: 1px solid transparent;
       cursor: pointer;
-      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+      transition: background 0.14s, border-color 0.14s, transform 0.08s;
     }
 
     .btn:active { transform: translateY(1px); }
-    .btn-primary { background: var(--accent); color: #ffffff; }
-    .btn-primary:hover { background: var(--accent-hover); }
-    .btn-secondary { background: var(--surface); color: var(--ink); border-color: var(--border); }
-    .btn-secondary:hover { border-color: #b7c0cf; background: #fafbfc; }
 
-    .hero { padding: 64px 0 70px; border-bottom: 1px solid var(--border); }
-    .hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 52px; align-items: center; }
+    .btn-primary {
+      background: var(--accent);
+      color: #ffffff;
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+
+    .btn-outline {
+      background: var(--bg-surface);
+      color: var(--ink);
+      border-color: var(--hairline);
+    }
+    .btn-outline:hover { border-color: #9ba5b5; background: #fbfcfd; }
+
+    /* Split Asymmetric Hero (fits cleanly in initial desktop viewport) */
+    .hero {
+      padding: 56px 0 60px;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+      gap: 48px;
+      align-items: center;
+    }
 
     .eyebrow {
       display: inline-block;
-      font-family: var(--mono);
-      font-size: 11.5px;
+      font-family: var(--font-mono);
+      font-size: 11px;
       font-weight: 600;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.09em;
       text-transform: uppercase;
       color: var(--accent);
       margin-bottom: 14px;
@@ -197,334 +267,810 @@
 
     h1 {
       margin: 0 0 18px;
-      font-size: clamp(32px, 3.5vw, 46px);
-      line-height: 1.08;
-      letter-spacing: -0.035em;
+      font-size: clamp(32px, 3.6vw, 48px);
+      line-height: 1.06;
+      letter-spacing: -0.036em;
       font-weight: 700;
       color: var(--ink);
     }
 
     .hero-sub {
       margin: 0 0 28px;
-      font-size: 17px;
-      color: var(--muted);
-      max-width: 48ch;
+      font-size: 16.5px;
+      color: var(--ink-muted);
+      max-width: 44ch;
       line-height: 1.55;
     }
 
-    .hero-ctas { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-
-    .mac-demo {
-      background: var(--surface-dark);
-      border-radius: 18px;
-      padding: 18px 18px 14px;
-      box-shadow: 0 28px 60px rgba(15, 19, 26, 0.16);
-      border: 1px solid #262b36;
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
-    .mac-screen {
+    /* Live Interactive Optical Calibration Instrument (Right Hero) */
+    .instrument {
+      background: var(--bg-lab);
+      border: 1px solid #232834;
+      border-radius: var(--radius-frame);
+      padding: 16px;
+      color: var(--ink-lab);
+      box-shadow: 0 24px 54px rgba(12, 14, 18, 0.14);
+    }
+
+    .instrument-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .inst-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--ink-lab-muted);
+      text-transform: uppercase;
+    }
+
+    .swatch-group {
+      display: inline-flex;
+      gap: 4px;
+      background: #171b24;
+      padding: 3px;
+      border-radius: var(--radius-ctrl);
+      border: 1px solid var(--hairline-lab);
+    }
+
+    .swatch-btn {
+      border: none;
+      background: transparent;
+      color: #c6cedb;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 8px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    .swatch-btn:hover { color: #ffffff; background: rgba(255, 255, 255, 0.07); }
+    .swatch-btn.active { background: var(--accent); color: #ffffff; }
+
+    .lcd-stage {
       position: relative;
-      height: 270px;
-      border-radius: 10px;
+      height: 252px;
+      border-radius: 8px;
       overflow: hidden;
-      background: #84878d;
+      background: #808080;
       border: 1px solid rgba(255, 255, 255, 0.14);
-      user-select: none;
+      cursor: ew-resize;
     }
 
-    .sim-band { position: absolute; top: 0; bottom: 0; background: rgba(0, 0, 0, 0.14); }
-    .sim-band.b1 { left: 4%; width: 20%; }
-    .sim-band.b2 { left: 42%; width: 21%; }
-
-    .comp-curtain {
+    .lcd-stage canvas {
       position: absolute;
-      top: 0;
-      bottom: 0;
-      right: 0;
-      width: 56%;
-      background: #84878d;
-      border-left: 2px solid #ffffff;
-      box-shadow: -8px 0 24px rgba(0, 0, 0, 0.18);
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .lcd-hover-hint {
+      position: absolute;
+      bottom: 10px;
+      left: 12px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      padding: 3px 8px;
+      border-radius: 5px;
+      background: rgba(12, 14, 18, 0.72);
+      color: #e2e8f0;
       pointer-events: none;
     }
 
-    .comp-label {
+    .lcd-delta-pill {
       position: absolute;
-      top: 12px;
-      font-family: var(--mono);
+      top: 10px;
+      right: 12px;
+      font-family: var(--font-mono);
       font-size: 11px;
       font-weight: 600;
       padding: 4px 9px;
-      border-radius: 6px;
-      background: rgba(15, 19, 26, 0.72);
+      border-radius: 5px;
+      background: rgba(12, 14, 18, 0.78);
       color: #f3f5f8;
+      border: 1px solid rgba(255, 255, 255, 0.16);
       pointer-events: none;
     }
 
-    .comp-label.left { left: 12px; }
-    .comp-label.right { right: 12px; background: rgba(37, 99, 235, 0.94); color: #fff; }
+    .lcd-delta-pill.matched {
+      background: rgba(29, 78, 216, 0.92);
+      border-color: rgba(147, 197, 253, 0.6);
+    }
 
-    .mac-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+    .instrument-controls {
       margin-top: 12px;
-      color: #c5ccd8;
-      font-size: 12px;
-    }
-
-    .mac-bar input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
-
-    section { padding: 70px 0; border-bottom: 1px solid var(--border); }
-    section:last-of-type { border-bottom: none; }
-
-    .section-head { margin-bottom: 34px; max-width: 64ch; }
-    .section-head h2 { margin: 0 0 10px; font-size: clamp(26px, 3vw, 34px); letter-spacing: -0.03em; line-height: 1.15; }
-    .section-head p { margin: 0; color: var(--muted); font-size: 15.5px; }
-
-    .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-    .step-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
-    .step-num { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 10px; }
-    .step-card h3 { margin: 0 0 8px; font-size: 17px; letter-spacing: -0.015em; }
-    .step-card p { margin: 0; font-size: 14px; color: var(--muted); }
-
-    .split-two { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 26px; }
-    .box.dark { background: var(--surface-dark); border-color: #242934; color: #f3f5f8; }
-    .box.dark p, .box.dark li { color: #b5bece; }
-    .box h3 { margin: 0 0 14px; font-size: 18px; letter-spacing: -0.02em; }
-    .box ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 10px; font-size: 14.5px; color: var(--muted); }
-    .box li strong { color: var(--ink); }
-    .box.dark li strong { color: #ffffff; }
-
-    .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-    .faq-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; }
-    .faq-item h3 { margin: 0 0 8px; font-size: 15.5px; letter-spacing: -0.01em; }
-    .faq-item p { margin: 0; font-size: 14px; color: var(--muted); }
-
-    .code-block {
-      margin: 12px 0 0;
-      padding: 12px 14px;
-      border-radius: 10px;
-      background: #0f131a;
-      color: #e2e8f0;
-      font-family: var(--mono);
-      font-size: 12.5px;
-      overflow-x: auto;
-      display: flex;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
       align-items: center;
-      justify-content: space-between;
       gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: #cbd5e1;
     }
 
-    .copy-mini {
-      background: rgba(255, 255, 255, 0.12);
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 4px 9px;
-      font-size: 11.5px;
-      font-family: var(--font);
+    .instrument-controls input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent-bright);
       cursor: pointer;
     }
 
-    .copy-mini:hover { background: rgba(255, 255, 255, 0.22); }
+    .instrument-readout {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--hairline-lab);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-lab-muted);
+    }
 
-    footer { padding: 36px 0 48px; border-top: 1px solid var(--border); font-size: 13px; color: var(--muted); }
-    .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-    .footer-links { display: flex; gap: 18px; flex-wrap: wrap; }
+    /* Hairline Technical Spec Strip (directly below hero) */
+    .spec-strip {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .spec-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .spec-cell {
+      padding: 20px 20px 20px 0;
+      border-right: 1px solid var(--hairline);
+      padding-left: 20px;
+    }
+
+    .spec-cell:first-child { padding-left: 0; }
+    .spec-cell:last-child { border-right: none; padding-right: 0; }
+
+    .spec-key {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .spec-val {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+    }
+
+    /* Dark Optical-Lab Workflow Section (Breaks light-page monotony; zero uniform cards) */
+    .lab-section {
+      background: var(--bg-lab);
+      color: var(--ink-lab);
+      padding: 84px 0;
+      border-bottom: 1px solid #1e2330;
+    }
+
+    .lab-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+      gap: 64px;
+      align-items: start;
+    }
+
+    .lab-intro h2 {
+      margin: 0 0 14px;
+      font-size: clamp(28px, 3vw, 38px);
+      line-height: 1.12;
+      letter-spacing: -0.03em;
+    }
+
+    .lab-intro p {
+      margin: 0 0 24px;
+      color: var(--ink-lab-muted);
+      font-size: 15.5px;
+      max-width: 42ch;
+    }
+
+    .kbd-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-top: 18px;
+      border-top: 1px solid var(--hairline-lab);
+    }
+
+    .kbd-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: #cbd5e1;
+      background: var(--bg-lab-elevated);
+      border: 1px solid var(--hairline-lab);
+      padding: 5px 10px;
+      border-radius: 6px;
+    }
+
+    kbd {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.10);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .ledger {
+      border-top: 1px solid var(--hairline-lab);
+    }
+
+    .ledger-row {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 20px;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--hairline-lab);
+    }
+
+    .ledger-num {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent-bright);
+      padding-top: 3px;
+    }
+
+    .ledger-body h3 {
+      margin: 0 0 6px;
+      font-size: 18px;
+      font-weight: 650;
+      letter-spacing: -0.015em;
+      color: #ffffff;
+    }
+
+    .ledger-body p {
+      margin: 0;
+      font-size: 14.5px;
+      color: var(--ink-lab-muted);
+      max-width: 54ch;
+    }
+
+    .ledger-body code {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: #dbeafe;
+    }
+
+    /* Light Sections: Hardware Reality & Install */
+    .band-section {
+      padding: 80px 0;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .band-section.surface { background: var(--bg-surface); }
+
+    .asymmetric {
+      display: grid;
+      grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+      gap: 56px;
+      align-items: start;
+    }
+
+    .sec-title {
+      margin: 0 0 12px;
+      font-size: clamp(26px, 2.8vw, 34px);
+      line-height: 1.14;
+      letter-spacing: -0.03em;
+    }
+
+    .sec-lead {
+      margin: 0 0 20px;
+      font-size: 15.5px;
+      color: var(--ink-muted);
+      max-width: 44ch;
+    }
+
+    .inline-link {
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    /* Comparison Ledger (Hairlines, zero heavy boxes) */
+    .matrix {
+      border-top: 2px solid var(--ink);
+    }
+
+    .matrix-row {
+      display: grid;
+      grid-template-columns: 165px 1fr;
+      gap: 20px;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .matrix-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding-top: 3px;
+    }
+
+    .matrix-tag.solves { color: var(--accent); }
+    .matrix-tag.limit { color: var(--ink-muted); }
+
+    .matrix-content strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 3px;
+      color: var(--ink);
+    }
+
+    .matrix-content p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--ink-muted);
+    }
+
+    /* Install Panel */
+    .install-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      gap: 32px;
+      align-items: start;
+    }
+
+    .install-panel {
+      min-width: 0;
+      background: var(--bg-surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-frame);
+      padding: 28px;
+    }
+
+    .install-panel h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .install-panel p,
+    .install-panel li {
+      font-size: 14px;
+      color: var(--ink-muted);
+    }
+
+    .install-panel ol {
+      margin: 10px 0 0;
+      padding-left: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .cmd-box {
+      margin-top: 12px;
+      padding: 11px 14px;
+      border-radius: var(--radius-ctrl);
+      background: var(--bg-lab);
+      color: #e2e8f0;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      overflow-x: auto;
+    }
+
+    .copy-btn {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-family: var(--font-sans);
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .copy-btn:hover { background: rgba(255, 255, 255, 0.22); }
+
+    /* Accessible Native FAQ Disclosure Ledger */
+    .faq-list {
+      border-top: 1px solid var(--hairline);
+    }
+
+    .faq-list details {
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .faq-list summary {
+      list-style: none;
+      padding: 20px 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .faq-list summary::-webkit-details-marker { display: none; }
+
+    .faq-list summary::after {
+      content: "+";
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--ink-muted);
+      transition: transform 0.15s;
+    }
+
+    .faq-list details[open] summary::after { content: "−"; color: var(--accent); }
+
+    .faq-answer {
+      padding: 0 0 22px;
+      margin: 0;
+      font-size: 14.5px;
+      color: var(--ink-muted);
+      max-width: 68ch;
+    }
+
+    .faq-answer code {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      background: #e9ecf2;
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: var(--ink);
+    }
+
+    /* Footer */
+    footer {
+      padding: 36px 0 48px;
+      background: var(--bg-light);
+      font-size: 13px;
+      color: var(--ink-muted);
+    }
+
+    .footer-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 22px;
+      flex-wrap: wrap;
+    }
+
     .footer-links a:hover { color: var(--ink); }
 
-    @media (max-width: 900px) {
-      .hero-grid, .steps-grid, .split-two, .faq-grid { grid-template-columns: 1fr; }
-      nav.links { display: none; }
-      .hero { padding: 44px 0 52px; }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    @media (max-width: 960px) {
+      .hero-grid,
+      .lab-layout,
+      .asymmetric,
+      .install-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 32px;
+      }
+      .spec-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .spec-cell { border-right: none; border-bottom: 1px solid var(--hairline); padding: 16px 0; }
+      .spec-cell:last-child { border-bottom: none; }
+      .nav-links { display: none; }
+      .hero { padding: 40px 0 48px; }
+    }
+
+    @media (max-width: 600px) {
+      .wrap { padding: 0 16px; }
+      .btn { padding: 9px 14px; font-size: 13px; }
+      .matrix-row { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+      .ledger-row { grid-template-columns: 40px minmax(0, 1fr); gap: 12px; }
+      .cmd-box { font-size: 11.5px; }
+      .cmd-box code { overflow-wrap: anywhere; }
+      .install-panel { padding: 20px; }
+      .instrument { padding: 12px; }
+      .spec-grid { grid-template-columns: minmax(0, 1fr); }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="container nav-inner">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap nav-bar">
       <a class="brand" href="index.html">
-        <img src="assets/icon.png" alt="EvenDisplay icon" />
+        <img src="assets/icon.png" alt="EvenDisplay icon" width="26" height="26" />
         <span>EvenDisplay</span>
       </a>
-      <nav class="links" aria-label="Primary">
-        <a href="#workflow">How it works</a>
-        <a href="#honest-scope">Honest limits</a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#calibration">Calibration</a>
+        <a href="#reality">Hardware reality</a>
         <a href="macbook-vertical-bands-guide.html">Diagnostic guide</a>
-        <a href="#install">Install free</a>
+        <a href="#install">Install</a>
       </nav>
       <a class="btn btn-primary" href="studio.html">Open Web Studio</a>
     </div>
   </header>
 
-  <main>
+  <main id="main-content">
+    <!-- Asymmetric Split Hero -->
     <section class="hero">
-      <div class="container hero-grid">
+      <div class="wrap hero-grid">
         <div>
-          <span class="eyebrow">Open Source · macOS 13+ &amp; Web</span>
-          <h1>Even out dim vertical bands on your MacBook.</h1>
+          <span class="eyebrow">Open Source · macOS 13+ &amp; Web · MIT</span>
+          <h1>Neutralize dim vertical bands on your MacBook.</h1>
           <p class="hero-sub">
-            Drag two precision compensation bands over worn LCD columns, verify across gray and RGB, and undo everything in one click.
+            Align two hover-only compensation bands over worn LCD columns, verify across 9 colors, and revert cleanly in one keystroke.
           </p>
-          <div class="hero-ctas">
+          <div class="hero-actions">
             <a class="btn btn-primary" href="studio.html">Open Web Studio</a>
-            <a class="btn btn-secondary" href="#install">Download Mac App</a>
+            <a class="btn btn-outline" href="#install">Download v1.0.0</a>
           </div>
         </div>
 
-        <div class="mac-demo" aria-label="Interactive before and after demonstration">
-          <div class="mac-screen" id="demo-screen">
-            <div class="sim-band b1"></div>
-            <div class="sim-band b2"></div>
-            <div class="comp-curtain" id="demo-curtain"></div>
-            <span class="comp-label left">Raw LCD bands</span>
-            <span class="comp-label right">EvenDisplay active</span>
-          </div>
-          <div class="mac-bar">
-            <span style="font-family:var(--mono);font-size:11px;">Before / After</span>
-            <input type="range" id="demo-slider" min="0" max="100" value="56" aria-label="Slide before and after compensation preview" />
-            <span id="demo-pct" style="font-family:var(--mono);font-size:11px;min-width:34px;text-align:right;">56%</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="workflow">
-      <div class="container">
-        <div class="section-head">
-          <h2>Built for how dim vertical bands behave on MacBooks.</h2>
-          <p>Run a 50% gray screen uniformity test in your browser first, then sync your calibrated profile to the native macOS menu-bar utility.</p>
-        </div>
-
-        <div class="steps-grid">
-          <article class="step-card">
-            <div class="step-num">01 / ALIGN</div>
-            <h3>Drag movable bands directly on screen</h3>
-            <p>Start on 50% Gray where uneven columns stand out sharpest. Drag Band 1 and Band 2 over the dim strips and resize their edges pixel-by-pixel.</p>
-          </article>
-
-          <article class="step-card">
-            <div class="step-num">02 / VERIFY</div>
-            <h3>Keep bands locked across 9 test colors</h3>
-            <p>Press keys 1 through 9 to flip across 50% Gray, 25% Gray, 75% Gray, 10% Dark, White, Red, Green, Blue, and Black while your bands remain active.</p>
-          </article>
-
-          <article class="step-card">
-            <div class="step-num">03 / SYNC TO MAC</div>
-            <h3>Float click-through on built-in display</h3>
-            <p>Export a lightweight <code>.evendisplay.json</code> profile into EvenDisplay.app. The overlay locks strictly to your MacBook screen and never tints external monitors.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="honest-scope">
-      <div class="container">
-        <div class="section-head">
-          <h2>What software can solve — and what only hardware can.</h2>
-          <p>No misleading miracle claims. Read the <a href="macbook-vertical-bands-guide.html" style="color:var(--accent);text-decoration:underline;">MacBook vertical bands diagnostic guide</a> to tell hardware wear from temporary image retention in two minutes.</p>
-        </div>
-
-        <div class="split-two">
-          <div class="box">
-            <h3>What EvenDisplay solves</h3>
-            <ul>
-              <li><strong>Visual seam blending:</strong> Lifts dim vertical columns on grays and subtly dims surrounding bright areas on white pages so seams stop distracting your eyes.</li>
-              <li><strong>Temporary IPS image retention:</strong> Includes a full-screen White &amp; Gray Sweep, RGB subpixel cycle, and pixel snow conditioner with automatic wake lock.</li>
-              <li><strong>100% reversible user-space design:</strong> Never modifies macOS system files, ColorSync ICC profiles, GPU registers, or NVRAM.</li>
-              <li><strong>Instant safety controls:</strong> Full Undo/Redo (Cmd+Z), Compare Original (C), named Light/Dark checkpoints, and instant Revert to Stock (Cmd+Option+0).</li>
-            </ul>
+        <!-- Live Interactive Optical Calibration Instrument -->
+        <div class="instrument" aria-label="Interactive MacBook display band compensation simulator">
+          <div class="instrument-top">
+            <span class="inst-title">Live Optical Preview · MacBook Retina</span>
+            <div class="swatch-group" role="group" aria-label="Select test color">
+              <button class="swatch-btn active" type="button" data-color="gray50">50% Gray</button>
+              <button class="swatch-btn" type="button" data-color="gray25">25% Gray</button>
+              <button class="swatch-btn" type="button" data-color="white">White</button>
+              <button class="swatch-btn" type="button" data-color="red">Red</button>
+            </div>
           </div>
 
-          <div class="box dark">
-            <h3>Hardware realities</h3>
-            <ul>
-              <li><strong>Column-driver (COF) &amp; flex cable wear:</strong> Sharp top-to-bottom dim stripes that survive a reboot are physical hardware defects inside the laminated display assembly.</li>
-              <li><strong>Lid-angle check built in:</strong> Tilt your MacBook lid on 75% Gray or 10% Dark Gray. If band intensity shifts with hinge angle, the hinge display flex cable is wearing out.</li>
-              <li><strong>Practical daily workaround:</strong> Use EvenDisplay while deciding between an AppleCare+ repair, third-party screen swap, or external monitor setup.</li>
-            </ul>
+          <div class="lcd-stage" id="hero-lcd-stage">
+            <canvas id="hero-lcd-canvas"></canvas>
+            <span class="lcd-delta-pill" id="hero-delta-pill">ΔL -14.0% · Raw LCD</span>
+            <span class="lcd-hover-hint" id="hero-hover-hint">Hover band seam to reveal edge guides</span>
+          </div>
+
+          <div class="instrument-controls">
+            <label for="hero-comp-slider">Compensation</label>
+            <input type="range" id="hero-comp-slider" min="0" max="100" value="72" />
+            <span id="hero-comp-pct" style="min-width:36px;text-align:right;">72%</span>
+          </div>
+
+          <div class="instrument-readout">
+            <span id="hero-band-readout">Band 1: 4–24% (+7.2%) · Band 2: 42–63% (+8.6%)</span>
+            <span>Hover edge: auto-reveal</span>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="faq">
-      <div class="container">
-        <div class="section-head">
-          <h2>Common questions from MacBook owners</h2>
-          <p>Straight answers to the exact questions people hit when dim vertical bands appear on a MacBook Pro or Air.</p>
+    <!-- Compact Technical Spec Strip -->
+    <div class="spec-strip" aria-label="Technical specifications">
+      <div class="wrap spec-grid">
+        <div class="spec-cell">
+          <span class="spec-key">System Writes</span>
+          <span class="spec-val">0 KB (pure user-space overlay)</span>
+        </div>
+        <div class="spec-cell">
+          <span class="spec-key">Display Scope</span>
+          <span class="spec-val">CGDisplayIsBuiltin lock only</span>
+        </div>
+        <div class="spec-cell">
+          <span class="spec-key">Color Pipeline</span>
+          <span class="spec-val">Brightness · Temp · Tint · Fine RGB</span>
+        </div>
+        <div class="spec-cell">
+          <span class="spec-key">Safety &amp; Cost</span>
+          <span class="spec-val">1-keystroke revert · $0 MIT</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dark Optical-Lab Workflow Ledger -->
+    <section id="calibration" class="lab-section">
+      <div class="wrap lab-layout">
+        <div class="lab-intro">
+          <span class="eyebrow" style="color:var(--accent-bright);">Calibration Workflow</span>
+          <h2>Match seams eye-to-eye without UI lines in the way.</h2>
+          <p>
+            Start in your browser with zero installation to confirm whether your dim vertical bands can be visually blended, then export your calibrated profile straight into the native macOS menu-bar app.
+          </p>
+          <div class="kbd-legend" aria-label="Keyboard shortcuts">
+            <span class="kbd-chip"><kbd>1–9</kbd> Switch test colors</span>
+            <span class="kbd-chip"><kbd>C</kbd> Compare raw</span>
+            <span class="kbd-chip"><kbd>⌘Z</kbd> Undo / Redo</span>
+            <span class="kbd-chip"><kbd>⌘⌥0</kbd> Stock screen</span>
+          </div>
         </div>
 
-        <div class="faq-grid">
-          <article class="faq-item">
-            <h3>Does MacBook Pro have a built-in pixel cleaner?</h3>
-            <p>No. macOS has no manual Pixel Cleaning or Pixel Refresh toggle. IPS LCD and Mini-LED MacBook Pros do not use OLED cleaning cycles, while OLED panels compensate automatically during sleep.</p>
-          </article>
-          <article class="faq-item">
-            <h3>Can software physically repair vertical dark bands?</h3>
-            <p>No software can repair cracked COF traces or worn hinge flex cables. EvenDisplay visually compensates the luminance mismatch with a reversible click-through overlay so the display stays comfortable to work on.</p>
-          </article>
-          <article class="faq-item">
-            <h3>Will EvenDisplay tint my external monitor?</h3>
-            <p>No. The native macOS app queries <code>CGDisplayIsBuiltin</code> and anchors the overlay exclusively to your built-in MacBook panel.</p>
-          </article>
-          <article class="faq-item">
-            <h3>How do I undo everything cleanly?</h3>
-            <p>Press <code>Cmd+Option+0</code> for an instant stock screen, click Factory Reset in Preferences, or quit/delete EvenDisplay.app. Zero system files are ever modified.</p>
-          </article>
+        <div class="ledger">
+          <div class="ledger-row">
+            <div class="ledger-num">01</div>
+            <div class="ledger-body">
+              <h3>Hover-only band edges for unobstructed matching</h3>
+              <p>Band borders stay completely invisible while you move sliders. Hover within 20px of a band edge to reveal its hairline guide, drag it over your dim strip, and move back to the controls — the line vanishes immediately so your eyes judge only the seam.</p>
+            </div>
+          </div>
+
+          <div class="ledger-row">
+            <div class="ledger-num">02</div>
+            <div class="ledger-body">
+              <h3>Brightness, Temp, Tint &amp; per-channel RGB trim</h3>
+              <p>Worn LCD column drivers often introduce subtle green, magenta, or warm casts alongside dimming. Dial Brightness (±50%), Temp (±40%), Green/Magenta Tint (±40%), Fine RGB, or Outside Dim on pure white — double-click any slider to reset to default.</p>
+            </div>
+          </div>
+
+          <div class="ledger-row">
+            <div class="ledger-num">03</div>
+            <div class="ledger-body">
+              <h3>Verify locked across 9 colors, then sync to macOS</h3>
+              <p>Flip across 50% Gray, 25% Gray, 75% Gray, 10% Dark, White, Red, Green, Blue, and Black while your bands remain locked. Export <code>.evendisplay.json</code> into <code>EvenDisplay.app</code> for a click-through overlay anchored strictly to your built-in MacBook panel.</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <section id="install">
-      <div class="container">
-        <div class="section-head">
-          <h2>Free, open source, and outside the Mac App Store.</h2>
-          <p>Hosted directly on GitHub Releases and Homebrew at zero cost — no App Store sandbox limits, no account, and zero telemetry.</p>
+    <!-- Honest Engineering Reality Section -->
+    <section id="reality" class="band-section surface">
+      <div class="wrap asymmetric">
+        <div>
+          <span class="eyebrow">Hardware Transparency</span>
+          <h2 class="sec-title">What software solves — and what only hardware fixes.</h2>
+          <p class="sec-lead">
+            No misleading "miracle pixel repair" promises. EvenDisplay separates temporary IPS image retention from physical column-driver (COF) wear before you spend money on a screen replacement.
+          </p>
+          <a class="inline-link" href="macbook-vertical-bands-guide.html">Read the 2-minute MacBook diagnostic guide →</a>
         </div>
 
-        <div class="split-two">
-          <div class="box">
-            <h3>Download EvenDisplay.app (macOS 13+)</h3>
-            <p style="font-size:14px;color:var(--muted);margin:0 0 16px;">
-              Unzip, drag <strong>EvenDisplay.app</strong> into <code>/Applications</code>, and import your <code>.evendisplay.json</code> calibration from the Web Studio.
-            </p>
-            <div class="hero-ctas" style="margin-bottom:14px;">
+        <div class="matrix">
+          <div class="matrix-row">
+            <div class="matrix-tag solves">Software Solves</div>
+            <div class="matrix-content">
+              <strong>Visual vertical seam blending</strong>
+              <p>Compensates uneven luminance and color cast across dim strips on grays, dark themes, and light backgrounds with zero modification to ColorSync ICC profiles or NVRAM.</p>
+            </div>
+          </div>
+
+          <div class="matrix-row">
+            <div class="matrix-tag solves">Software Solves</div>
+            <div class="matrix-content">
+              <strong>Temporary IPS LCD image retention</strong>
+              <p>Includes a full-screen White &amp; Gray Sweep, RGB subpixel cycle, and pixel snow conditioner with automatic display wake-lock for genuinely stuck subpixels or ghosting.</p>
+            </div>
+          </div>
+
+          <div class="matrix-row">
+            <div class="matrix-tag limit">Hardware Limit</div>
+            <div class="matrix-content">
+              <strong>Cracked COF drivers &amp; hinge flex cable wear</strong>
+              <p>Sharp top-to-bottom vertical dim bands that appear on the Apple boot screen or shift with lid angle are physical defects in the laminated assembly and require a display replacement to cure permanently.</p>
+            </div>
+          </div>
+
+          <div class="matrix-row">
+            <div class="matrix-tag solves">Built-In Safety</div>
+            <div class="matrix-content">
+              <strong>100% reversible at every step</strong>
+              <p>Press Cmd+Option+0, toggle the menu bar icon, or quit the app to return instantly to stock macOS. External monitors are never touched via <code>CGDisplayIsBuiltin</code>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Free Open-Source Install Section -->
+    <section id="install" class="band-section">
+      <div class="wrap">
+        <div style="max-width:58ch;margin-bottom:32px;">
+          <span class="eyebrow">Direct Distribution · $0 Forever</span>
+          <h2 class="sec-title">Outside the Mac App Store, by design.</h2>
+          <p class="sec-lead" style="margin-bottom:0;">
+            App Store sandboxing blocks system-wide display overlays. EvenDisplay ships free via GitHub Releases and Homebrew with zero telemetry and open MIT source.
+          </p>
+        </div>
+
+        <div class="install-grid">
+          <div class="install-panel">
+            <h3>EvenDisplay.app for macOS 13+</h3>
+            <p>Unzip, drag <strong>EvenDisplay.app</strong> to <code>/Applications</code>, and import your <code>.evendisplay.json</code> calibration from the Web Studio.</p>
+            <div class="hero-actions" style="margin:16px 0 18px;">
               <a class="btn btn-primary" href="https://github.com/amulyagupta1278/EvenDisplay/releases/latest/download/EvenDisplay-v1.0.0.zip">Download v1.0.0 (.zip)</a>
-              <a class="btn btn-secondary" href="https://github.com/amulyagupta1278/EvenDisplay" target="_blank" rel="noopener">View Source on GitHub</a>
+              <a class="btn btn-outline" href="https://github.com/amulyagupta1278/EvenDisplay" target="_blank" rel="noopener">Source on GitHub</a>
             </div>
-            <p style="font-size:12.5px;color:var(--muted);margin:0;">Or install via Homebrew Cask:</p>
-            <div class="code-block">
+            <p style="margin:0;font-size:12.5px;">Or install with Homebrew Cask:</p>
+            <div class="cmd-box">
               <code>brew install --cask amulyagupta1278/tap/evendisplay</code>
-              <button class="copy-mini" data-copy="brew install --cask amulyagupta1278/tap/evendisplay">Copy</button>
+              <button class="copy-btn" type="button" data-copy="brew install --cask amulyagupta1278/tap/evendisplay">Copy</button>
             </div>
           </div>
 
-          <div class="box">
-            <h3>First-launch note for free unsigned builds</h3>
-            <p style="font-size:14px;color:var(--muted);margin:0 0 12px;">
-              To keep EvenDisplay 100% free and MIT open source without an annual Apple Developer fee, release builds are ad-hoc signed rather than Apple-notarized. On first launch:
-            </p>
-            <ul>
-              <li>Open <strong>EvenDisplay.app</strong> once, then go to <strong>System Settings → Privacy &amp; Security → Open Anyway</strong>.</li>
-              <li>Or clear the browser quarantine flag in Terminal:</li>
-            </ul>
-            <div class="code-block">
+          <div class="install-panel">
+            <h3>First launch on unsigned open-source builds</h3>
+            <p>To keep EvenDisplay free without a $99/yr Apple Developer certificate, release builds are ad-hoc signed rather than notarized:</p>
+            <ol>
+              <li>Open <strong>EvenDisplay.app</strong> once, then authorize it under <strong>System Settings → Privacy &amp; Security → Open Anyway</strong>.</li>
+              <li>Or clear the browser quarantine attribute once in Terminal:</li>
+            </ol>
+            <div class="cmd-box">
               <code>xattr -cr /Applications/EvenDisplay.app</code>
-              <button class="copy-mini" data-copy="xattr -cr /Applications/EvenDisplay.app">Copy</button>
+              <button class="copy-btn" type="button" data-copy="xattr -cr /Applications/EvenDisplay.app">Copy</button>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Accessible FAQ Disclosure Ledger -->
+    <section id="faq" class="band-section surface">
+      <div class="wrap asymmetric">
+        <div>
+          <span class="eyebrow">FAQ</span>
+          <h2 class="sec-title">Straight answers for MacBook owners.</h2>
+          <p class="sec-lead">Everything you need to know before testing your screen or installing the menu-bar utility.</p>
+        </div>
+
+        <div class="faq-list">
+          <details open>
+            <summary>Does MacBook Pro have a built-in pixel cleaner?</summary>
+            <p class="faq-answer">No. macOS does not include a manual Pixel Cleaning or Pixel Refresh button in System Settings. IPS LCD and Mini-LED MacBook Pros do not use OLED cleaning cycles, and OLED panels run background voltage compensation automatically during sleep.</p>
+          </details>
+          <details>
+            <summary>Can software physically repair vertical dark bands?</summary>
+            <p class="faq-answer">No software can repair cracked COF traces or worn hinge flex cables. EvenDisplay visually compensates the luminance and color-cast mismatch with a reversible click-through overlay so the display stays comfortable to work on.</p>
+          </details>
+          <details>
+            <summary>Will EvenDisplay tint my external monitor?</summary>
+            <p class="faq-answer">No. The native macOS app queries <code>CGDisplayIsBuiltin</code> and anchors the overlay exclusively to your built-in MacBook panel.</p>
+          </details>
+          <details>
+            <summary>How do I undo everything cleanly?</summary>
+            <p class="faq-answer">Press <code>Cmd+Option+0</code> for an instant stock screen, double-click any slider to reset it to default, click Factory Reset in Preferences, or quit/delete <code>EvenDisplay.app</code>. Zero system files are ever modified.</p>
+          </details>
         </div>
       </div>
     </section>
   </main>
 
   <footer>
-    <div class="container footer-inner">
-      <span>EvenDisplay v1.0.0 · MIT License · Built by <a href="https://amulyagupta.in/" style="text-decoration:underline;">Amulya Gupta</a></span>
+    <div class="wrap footer-bar">
+      <span>EvenDisplay v1.0.0 · MIT License · Built by <a href="https://amulyagupta.in/" style="text-decoration:underline;text-underline-offset:3px;">Amulya Gupta</a></span>
       <div class="footer-links">
         <a href="studio.html">Web Studio</a>
         <a href="macbook-vertical-bands-guide.html">Diagnostic Guide</a>
@@ -533,26 +1079,153 @@
     </div>
   </footer>
 
+  <div id="copy-live-region" class="sr-only" aria-live="polite"></div>
+
   <script>
     (() => {
-      const slider = document.getElementById("demo-slider");
-      const curtain = document.getElementById("demo-curtain");
-      const pct = document.getElementById("demo-pct");
-      const updateDemo = () => {
-        const v = Number(slider.value);
-        curtain.style.width = `${v}%`;
-        pct.textContent = `${v}%`;
-      };
-      slider.addEventListener("input", updateDemo);
-      updateDemo();
+      // Live Optical Calibration Instrument in Hero
+      const canvas = document.getElementById("hero-lcd-canvas");
+      const stage = document.getElementById("hero-lcd-stage");
+      const slider = document.getElementById("hero-comp-slider");
+      const pctEl = document.getElementById("hero-comp-pct");
+      const deltaPill = document.getElementById("hero-delta-pill");
+      const readout = document.getElementById("hero-band-readout");
+      const hoverHint = document.getElementById("hero-hover-hint");
 
-      document.querySelectorAll(".copy-mini").forEach(btn => {
+      const COLORS = {
+        gray50: [128, 128, 128],
+        gray25: [64, 64, 64],
+        white:  [246, 247, 249],
+        red:    [220, 42, 42]
+      };
+
+      let activeColor = "gray50";
+      let compRatio = 0.72; // 0 = raw LCD dim bands, 1 = fully compensated
+      let hoverBand = null; // 0, 1, or null (hover-only edges!)
+
+      const BANDS = [
+        { x: 0.04, w: 0.20, dimFactor: 0.14 },
+        { x: 0.42, w: 0.21, dimFactor: 0.16 }
+      ];
+
+      function drawInstrument() {
+        const dpr = window.devicePixelRatio || 1;
+        const rect = stage.getBoundingClientRect();
+        const w = Math.max(1, Math.round(rect.width * dpr));
+        const h = Math.max(1, Math.round(rect.height * dpr));
+        if (canvas.width !== w || canvas.height !== h) {
+          canvas.width = w;
+          canvas.height = h;
+        }
+        const ctx = canvas.getContext("2d");
+        const base = COLORS[activeColor];
+
+        // On Pure White, simulate Outside Dim lowering surrounding luminance to match the dim bands
+        const isWhite = activeColor === "white";
+        const outsideDrop = isWhite ? (0.14 * compRatio) : 0;
+        const bgR = Math.round(base[0] * (1 - outsideDrop));
+        const bgG = Math.round(base[1] * (1 - outsideDrop));
+        const bgB = Math.round(base[2] * (1 - outsideDrop));
+
+        ctx.fillStyle = `rgb(${bgR},${bgG},${bgB})`;
+        ctx.fillRect(0, 0, w, h);
+
+        BANDS.forEach((b, idx) => {
+          const x0 = Math.round(b.x * w);
+          const bw = Math.round(b.w * w);
+          const residualDim = b.dimFactor * (1 - compRatio);
+          const br = Math.round(bgR * (1 - residualDim));
+          const bg = Math.round(bgG * (1 - residualDim));
+          const bb = Math.round(bgB * (1 - residualDim));
+          ctx.fillStyle = `rgb(${br},${bg},${bb})`;
+          ctx.fillRect(x0, 0, bw, h);
+
+          // Draw hover-only seam guides when pointer hovers near band edge
+          if (hoverBand === idx) {
+            ctx.save();
+            ctx.strokeStyle = "rgba(59, 130, 246, 0.95)";
+            ctx.lineWidth = 1.5 * dpr;
+            ctx.setLineDash([5 * dpr, 4 * dpr]);
+            ctx.beginPath();
+            ctx.moveTo(x0 + 0.5, 0); ctx.lineTo(x0 + 0.5, h);
+            ctx.moveTo(x0 + bw - 0.5, 0); ctx.lineTo(x0 + bw - 0.5, h);
+            ctx.stroke();
+            ctx.restore();
+          }
+        });
+
+        const remDelta = (14.0 * (1 - compRatio)).toFixed(1);
+        deltaPill.textContent = compRatio >= 0.96
+          ? "ΔL 0.0% · Seam Matched"
+          : (compRatio <= 0.04 ? "ΔL -14.0% · Raw LCD" : `ΔL -${remDelta}% · EvenDisplay`);
+        deltaPill.classList.toggle("matched", compRatio >= 0.65);
+
+        const b1Lift = (10.0 * compRatio).toFixed(1);
+        const b2Lift = (12.0 * compRatio).toFixed(1);
+        readout.textContent = isWhite
+          ? `White Mode · Outside Dim: -${(14.0 * compRatio).toFixed(1)}% · Bands matched`
+          : `Band 1: 4–24% (+${b1Lift}%) · Band 2: 42–63% (+${b2Lift}%)`;
+      }
+
+      slider.addEventListener("input", () => {
+        compRatio = Number(slider.value) / 100;
+        pctEl.textContent = `${slider.value}%`;
+        drawInstrument();
+      });
+
+      slider.addEventListener("dblclick", () => {
+        slider.value = "100";
+        compRatio = 1.0;
+        pctEl.textContent = "100%";
+        drawInstrument();
+      });
+
+      document.querySelectorAll(".swatch-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".swatch-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          activeColor = btn.dataset.color;
+          drawInstrument();
+        });
+      });
+
+      stage.addEventListener("pointermove", (e) => {
+        const rect = stage.getBoundingClientRect();
+        const nx = (e.clientX - rect.left) / Math.max(1, rect.width);
+        let found = null;
+        BANDS.forEach((b, idx) => {
+          if (Math.abs(nx - b.x) < 0.04 || Math.abs(nx - (b.x + b.w)) < 0.04) found = idx;
+        });
+        if (found !== hoverBand) {
+          hoverBand = found;
+          hoverHint.textContent = found !== null
+            ? `Edge detected: Band ${found + 1} (${Math.round(BANDS[found].x * 100)}–${Math.round((BANDS[found].x + BANDS[found].w) * 100)}%)`
+            : "Hover band seam to reveal edge guides";
+          drawInstrument();
+        }
+      });
+
+      stage.addEventListener("pointerleave", () => {
+        if (hoverBand !== null) {
+          hoverBand = null;
+          hoverHint.textContent = "Hover band seam to reveal edge guides";
+          drawInstrument();
+        }
+      });
+
+      window.addEventListener("resize", drawInstrument);
+      drawInstrument();
+
+      // Accessible copy buttons
+      const liveRegion = document.getElementById("copy-live-region");
+      document.querySelectorAll(".copy-btn").forEach(btn => {
         btn.addEventListener("click", () => {
           const text = btn.dataset.copy;
           if (navigator.clipboard) {
             navigator.clipboard.writeText(text).then(() => {
               const orig = btn.textContent;
               btn.textContent = "Copied";
+              liveRegion.textContent = "Copied command to clipboard.";
               setTimeout(() => { btn.textContent = orig; }, 1600);
             }).catch(() => {});
           }
