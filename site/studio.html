@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MacBook Screen Uniformity Test &amp; Pixel Cleaner Studio — EvenDisplay</title>
+  <meta name="description" content="Free full-screen MacBook display uniformity test (50% gray, white, RGB), IPS pixel sweep cleaner, and 2-band movable brightness compensator. Runs in your browser and exports to EvenDisplay.app." />
+  <link rel="canonical" href="https://evendisplay.amulyagupta.in/studio.html" />
+  <link rel="icon" type="image/png" href="assets/icon.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="MacBook Screen Uniformity Test &amp; Pixel Cleaner Studio — EvenDisplay" />
+  <meta property="og:description" content="Drag 2 movable compensation bands over dim vertical strips, test across 50% gray and RGB, and export directly to EvenDisplay.app." />
+  <meta property="og:url" content="https://evendisplay.amulyagupta.in/studio.html" />
+  <meta property="og:image" content="https://evendisplay.amulyagupta.in/assets/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "EvenDisplay Web Calibration Studio",
+    "url": "https://evendisplay.amulyagupta.in/studio.html",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any (Optimized for macOS browsers)",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <style>
+    :root {
+      --bg: #0f1116;
+      --surface: #161922;
+      --surface-2: #202430;
+      --border: rgba(255, 255, 255, 0.12);
+      --text: #f3f5f8;
+      --muted: #9aa3b2;
+      --accent: #2563eb;
+      --accent-bright: #3b82f6;
+      --green: #22c55e;
+      --danger: #ef4444;
+      --warn: #f59e0b;
+      --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+      --mono: ui-monospace, "SF Mono", Menlo, monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #808080;
+      color: var(--text);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+    }
+
+    #stage {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: #808080;
+    }
+
+    #main-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    #bands-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    /* HOVER-ONLY BAND EDGES: completely invisible by default so you match color eye-to-eye! */
+    .band-box {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      pointer-events: auto;
+      cursor: grab;
+      border-left: 1.5px dashed transparent;
+      border-right: 1.5px dashed transparent;
+      transition: border-color 0.12s ease;
+    }
+
+    .band-box.edges-visible {
+      border-left-color: rgba(59, 130, 246, 0.92);
+      border-right-color: rgba(59, 130, 246, 0.92);
+    }
+
+    .band-box.dragging {
+      cursor: grabbing;
+      border-left: 2px solid #60a5fa;
+      border-right: 2px solid #60a5fa;
+    }
+
+    .band-box.disabled-ui {
+      pointer-events: none;
+      border-color: transparent !important;
+    }
+
+    .band-tag {
+      position: absolute;
+      top: 74px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(37, 99, 235, 0.90);
+      color: #fff;
+      border: 1px solid rgba(147, 197, 253, 0.8);
+      border-radius: 999px;
+      padding: 4px 11px;
+      font-size: 11.5px;
+      font-family: var(--mono);
+      font-weight: 600;
+      white-space: nowrap;
+      pointer-events: none;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+      opacity: 0;
+      transition: opacity 0.12s ease;
+    }
+
+    .band-box.edges-visible .band-tag,
+    .band-box.dragging .band-tag {
+      opacity: 1;
+    }
+
+    .resize-handle {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 24px;
+      cursor: ew-resize;
+      z-index: 5;
+    }
+
+    .resize-handle.left { left: -12px; }
+    .resize-handle.right { right: -12px; }
+
+    .resize-handle::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 4px;
+      height: 46px;
+      border-radius: 3px;
+      background: #60a5fa;
+      box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      transition: opacity 0.12s ease;
+    }
+
+    .band-box.edges-visible .resize-handle::after,
+    .band-box.dragging .resize-handle::after {
+      opacity: 1;
+    }
+
+    /* Top Test Color Bar */
+    #top-bar {
+      position: fixed;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: nowrap;
+      padding: 7px 10px;
+      background: rgba(18, 21, 28, 0.92);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      max-width: calc(100vw - 24px);
+      overflow-x: auto;
+    }
+
+    .home-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px 4px 6px;
+      border-radius: 999px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.08);
+      white-space: nowrap;
+    }
+
+    .home-pill:hover { background: rgba(255, 255, 255, 0.16); }
+    .home-pill img { width: 18px; height: 18px; border-radius: 4px; display: block; }
+
+    .color-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 550;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+
+    .color-pill:hover { background: rgba(255, 255, 255, 0.14); }
+    .color-pill.active { background: var(--accent); border-color: #93c5fd; color: #fff; }
+
+    .swatch {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      display: inline-block;
+    }
+
+    /* Draggable Control Panel */
+    #panel {
+      position: fixed;
+      bottom: 18px;
+      right: 18px;
+      width: 410px;
+      max-height: calc(100vh - 96px);
+      overflow-y: auto;
+      z-index: 40;
+      background: rgba(20, 23, 31, 0.95);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 14px;
+      box-shadow: 0 20px 55px rgba(0, 0, 0, 0.48);
+      padding: 14px;
+    }
+
+    #panel.hidden-ui, #top-bar.hidden-ui { display: none !important; }
+
+    #mini-restore {
+      position: fixed;
+      bottom: 14px;
+      right: 14px;
+      z-index: 45;
+      display: none;
+      background: rgba(18, 21, 28, 0.82);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: 12px;
+      font-family: var(--mono);
+      cursor: pointer;
+    }
+
+    #mini-restore.visible { display: inline-block; }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+      cursor: move;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 650;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.18);
+      color: #4ade80;
+    }
+
+    .row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .spacer { flex: 1; }
+
+    button.btn {
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 550;
+      color: var(--text);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    button.btn:hover:not(:disabled) { background: #2c3242; border-color: rgba(255, 255, 255, 0.24); }
+    button.btn:disabled { opacity: 0.38; cursor: not-allowed; }
+    button.btn.primary { background: var(--accent); border-color: transparent; color: #fff; }
+    button.btn.primary:hover:not(:disabled) { background: #1d4ed8; }
+    button.btn.warn-on { background: rgba(245, 158, 11, 0.24); border-color: rgba(245, 158, 11, 0.6); color: #fde68a; }
+    button.btn.danger { background: rgba(239, 68, 68, 0.16); border-color: rgba(239, 68, 68, 0.4); color: #fca5a5; }
+
+    .section {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 650;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin: 0 0 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .band-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 10px;
+      margin-bottom: 8px;
+    }
+
+    .band-card.selected {
+      border-color: rgba(59, 130, 246, 0.78);
+      background: rgba(37, 99, 235, 0.12);
+    }
+
+    .slider-line {
+      display: grid;
+      grid-template-columns: 104px 1fr 52px;
+      align-items: center;
+      gap: 8px;
+      font-size: 11.5px;
+      margin: 5px 0;
+    }
+
+    input[type="range"] { width: 100%; accent-color: var(--accent-bright); cursor: pointer; }
+    .mono { font-family: var(--mono); }
+    .note { font-size: 11.5px; color: var(--muted); line-height: 1.45; margin: 4px 0 0; }
+    .warn-note { font-size: 11.5px; color: #fcd34d; line-height: 1.45; margin: 6px 0 0; display: none; }
+    .warn-note.visible { display: block; }
+
+    .status-toast {
+      margin-top: 8px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      color: #bbf7d0;
+      display: none;
+    }
+
+    .status-toast.visible { display: block; }
+    .checkbox-label { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; cursor: pointer; }
+
+    .export-box {
+      width: 100%;
+      margin-top: 6px;
+      background: #0f1218;
+      color: #cbd5e1;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 9px;
+      font-family: var(--mono);
+      font-size: 11px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+      user-select: text;
+    }
+  </style>
+</head>
+<body>
+  <div id="stage">
+    <canvas id="main-canvas"></canvas>
+    <div id="bands-layer"></div>
+  </div>
+
+  <!-- Top Color Bar -->
+  <div id="top-bar" role="toolbar" aria-label="Test Colors">
+    <a class="home-pill" href="index.html" title="Back to EvenDisplay">
+      <img src="assets/icon.png" alt="" />
+      <span>EvenDisplay</span>
+    </a>
+    <div id="color-pills" class="row" style="flex-wrap:nowrap;"></div>
+    <button id="btn-fullscreen" class="btn primary" style="border-radius:999px;margin-left:4px;">Fullscreen</button>
+  </div>
+
+  <!-- Floating Calibration Panel -->
+  <div id="panel">
+    <div class="panel-header" id="panel-drag-handle" title="Drag to move panel anywhere">
+      <div class="panel-title">
+        Calibration Studio v1.1
+        <span class="badge">Hover Edges</span>
+      </div>
+      <div class="row">
+        <button id="btn-hide-ui" class="btn" title="Hide UI (H)">Hide UI (H)</button>
+      </div>
+    </div>
+
+    <div class="row" style="margin-bottom:8px;">
+      <button id="btn-undo" class="btn" disabled>Undo</button>
+      <button id="btn-redo" class="btn" disabled>Redo</button>
+      <button id="btn-compare" class="btn" title="Temporarily hide compensation (C)">Compare (C)</button>
+      <div class="spacer"></div>
+      <button id="btn-revert" class="btn danger" title="Restore stock screen (Cmd+Opt+0)">Revert</button>
+    </div>
+
+    <div class="row" style="margin-bottom:6px;">
+      <label class="checkbox-label" style="font-weight:600;">
+        <input type="checkbox" id="chk-enabled" checked /> Compensation ON
+      </label>
+      <label class="checkbox-label" title="Leave OFF so borders only appear when hovering a band edge">
+        <input type="checkbox" id="chk-always-edges" /> Always Show Edges
+      </label>
+      <div class="spacer"></div>
+      <button id="btn-add-band" class="btn">+ Band</button>
+    </div>
+
+    <p class="note">
+      <strong>Borders auto-hide:</strong> Hover near a band's left or right edge to reveal &amp; drag it. Move your cursor back to the sliders and the border disappears so you can match brightness, temp, and tint eye-to-eye.
+    </p>
+    <p id="white-tip" class="warn-note">
+      White tip: Pure White is already 100% bright, so +Brightness inside a band cannot exceed white — raise <strong>Dim Outside</strong> below to drop the bright surroundings down to match your dim bands.
+    </p>
+
+    <div id="status-toast" class="status-toast"></div>
+
+    <div class="section">
+      <div class="section-title">
+        <span>Movable Bands (← / → nudges 0.1%)</span>
+        <button id="btn-reset-bands" class="btn" style="padding:2px 7px;font-size:11px;">Reset 2 Bands</button>
+      </div>
+      <div id="band-cards"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span>Global Blend &amp; White-Screen Surroundings</span></div>
+      <div class="slider-line">
+        <span>Dim Outside</span>
+        <input type="range" id="rng-surround" min="0" max="40" step="0.5" value="0" />
+        <span class="mono" id="val-surround" style="text-align:right;">0.0%</span>
+      </div>
+      <div class="slider-line">
+        <span>Edge Feather</span>
+        <input type="range" id="rng-feather" min="0" max="20" step="0.5" value="0" />
+        <span class="mono" id="val-feather" style="text-align:right;">0.0 px</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span>Sync with EvenDisplay.app &amp; IPS Sweep</span></div>
+      <div class="row" style="margin-bottom:6px;">
+        <button id="btn-export-json" class="btn primary" style="flex:1;">Export .evendisplay.json</button>
+        <button id="btn-import-json" class="btn">Import JSON</button>
+        <input type="file" id="file-import" accept=".json,application/json" style="display:none;" />
+      </div>
+      <div class="row">
+        <button id="btn-sweep-toggle" class="btn" style="flex:1;">Run White/Gray Sweep</button>
+        <button id="btn-copy-cal" class="btn">Copy Summary</button>
+      </div>
+      <div id="export-box" class="export-box"></div>
+    </div>
+  </div>
+
+  <button id="mini-restore">Show Controls (H) · Compare (C) · Colors (1–9)</button>
+
+  <script>
+    (() => {
+      const STORAGE_KEY = "EvenDisplay.Studio.v1";
+
+      const TEST_COLORS = [
+        { id: "gray50", label: "50% Gray", css: "#808080" },
+        { id: "gray25", label: "25% Gray", css: "#404040" },
+        { id: "gray75", label: "75% Gray", css: "#bfbfbf" },
+        { id: "gray10", label: "10% Dark", css: "#1a1a1a" },
+        { id: "white",  label: "White",    css: "#ffffff" },
+        { id: "red",    label: "Red",      css: "#ff0000" },
+        { id: "green",  label: "Green",    css: "#00ff00" },
+        { id: "blue",   label: "Blue",     css: "#0000ff" },
+        { id: "black",  label: "Black",    css: "#000000" }
+      ];
+
+      function defaultProfile() {
+        return {
+          schema: "evendisplay.profile.v1",
+          bands: [
+            { id: 1, x: 0.00, w: 0.20, brightness: 8.0, warmth: 0.0, tint: 0.0, red: 0.0, green: 0.0, blue: 0.0 },
+            { id: 2, x: 0.40, w: 0.20, brightness: 10.0, warmth: 0.0, tint: 0.0, red: 0.0, green: 0.0, blue: 0.0 }
+          ],
+          surroundDim: 0.0,
+          edgeFeather: 0.0
+        };
+      }
+
+      function normalizeProfile(p) {
+        return {
+          schema: "evendisplay.profile.v1",
+          bands: Array.isArray(p.bands) && p.bands.length ? p.bands.slice(0, 6).map((b, i) => {
+            const w = Math.max(0.015, Math.min(1, Number(b.w) || 0.2));
+            const x = Math.max(0, Math.min(1 - w, Number(b.x) || 0));
+            return {
+              id: Number(b.id) || (i + 1),
+              x, w,
+              brightness: Math.max(-50, Math.min(50, Number(b.brightness) || 0)),
+              warmth: Math.max(-40, Math.min(40, Number(b.warmth) || 0)),
+              tint: Math.max(-40, Math.min(40, Number(b.tint) || 0)),
+              red: Math.max(-30, Math.min(30, Number(b.red) || 0)),
+              green: Math.max(-30, Math.min(30, Number(b.green) || 0)),
+              blue: Math.max(-30, Math.min(30, Number(b.blue) || 0))
+            };
+          }) : defaultProfile().bands,
+          surroundDim: Math.max(0, Math.min(40, Number(p.surroundDim) || 0)),
+          edgeFeather: Math.max(0, Math.min(20, Number(p.edgeFeather) || 0))
+        };
+      }
+
+      const clone = (o) => JSON.parse(JSON.stringify(o));
+
+      const state = {
+        enabled: true,
+        alwaysShowEdges: false, // Default OFF: edges appear ONLY on edge hover!
+        hoveredEdgeBandId: null,
+        uiHidden: false,
+        compareOriginal: false,
+        colorIndex: 0,
+        selectedBandId: 1,
+        expandedRGB: new Set(),
+        sweepRunning: false,
+        profile: defaultProfile(),
+        undoStack: [],
+        redoStack: [],
+        pendingDrag: null
+      };
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return;
+          const p = JSON.parse(raw);
+          if (p.profile) {
+            state.profile = normalizeProfile(p.profile);
+            state.selectedBandId = state.profile.bands[0].id;
+          }
+          if (typeof p.enabled === "boolean") state.enabled = p.enabled;
+        } catch (_) {}
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({ enabled: state.enabled, profile: state.profile }));
+        } catch (_) {}
+      }
+
+      let toastTimer = null;
+      function toast(msg) {
+        const el = document.getElementById("status-toast");
+        el.textContent = msg;
+        el.classList.add("visible");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => el.classList.remove("visible"), 3800);
+      }
+
+      function snapshot(label) {
+        return { label, profile: clone(state.profile), enabled: state.enabled };
+      }
+
+      function recordUndo(label) {
+        const entry = snapshot(label);
+        const last = state.undoStack[state.undoStack.length - 1];
+        if (last && JSON.stringify(last.profile) === JSON.stringify(entry.profile) && last.enabled === entry.enabled) return;
+        state.undoStack.push(entry);
+        if (state.undoStack.length > 60) state.undoStack.shift();
+        state.redoStack = [];
+      }
+
+      function beginDragUndo(label) {
+        if (!state.pendingDrag) state.pendingDrag = snapshot(label);
+      }
+
+      function commitDragUndo() {
+        if (!state.pendingDrag) return;
+        const prev = state.pendingDrag;
+        state.pendingDrag = null;
+        if (JSON.stringify(prev.profile) !== JSON.stringify(state.profile) || prev.enabled !== state.enabled) {
+          state.undoStack.push(prev);
+          if (state.undoStack.length > 60) state.undoStack.shift();
+          state.redoStack = [];
+          renderControls();
+        }
+      }
+
+      function undo() {
+        if (!state.undoStack.length) return;
+        const prev = state.undoStack.pop();
+        state.redoStack.push(snapshot(prev.label));
+        state.profile = clone(prev.profile);
+        state.enabled = prev.enabled;
+        if (!state.profile.bands.some(b => b.id === state.selectedBandId)) {
+          state.selectedBandId = state.profile.bands[0].id;
+        }
+        saveState();
+        toast("Undid: " + prev.label);
+        renderAll();
+      }
+
+      function redo() {
+        if (!state.redoStack.length) return;
+        const next = state.redoStack.pop();
+        state.undoStack.push(snapshot(next.label));
+        state.profile = clone(next.profile);
+        state.enabled = next.enabled;
+        saveState();
+        toast("Redid: " + next.label);
+        renderAll();
+      }
+
+      function revertAll() {
+        if (state.enabled) recordUndo("Revert to Stock");
+        state.enabled = false;
+        state.compareOriginal = false;
+        stopSweep();
+        saveState();
+        toast("Stock screen restored (Cmd+Z to re-enable)");
+        renderAll();
+      }
+
+      function drawFeatheredStrip(ctx, x0, x1, h, feather, rgb, alpha) {
+        if (alpha <= 0.0005 || x1 <= x0) return;
+        const w = x1 - x0;
+        if (feather <= 0.25) {
+          ctx.fillStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${alpha})`;
+          ctx.fillRect(x0, 0, w, h);
+          return;
+        }
+        const f = Math.min(feather, w * 0.45);
+        const core0 = x0 + f, core1 = x1 - f;
+        if (core1 > core0) {
+          ctx.fillStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${alpha})`;
+          ctx.fillRect(core0, 0, core1 - core0, h);
+        }
+        if (f > 0) {
+          const gL = ctx.createLinearGradient(x0, 0, core0, 0);
+          gL.addColorStop(0, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0)`);
+          gL.addColorStop(1, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${alpha})`);
+          ctx.fillStyle = gL; ctx.fillRect(x0, 0, f, h);
+
+          const gR = ctx.createLinearGradient(core1, 0, x1, 0);
+          gR.addColorStop(0, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${alpha})`);
+          gR.addColorStop(1, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0)`);
+          ctx.fillStyle = gR; ctx.fillRect(core1, 0, f, h);
+        }
+      }
+
+      let sweepPhase = 0, sweepRAF = null, sweepStart = 0;
+
+      function renderCanvas() {
+        const canvas = document.getElementById("main-canvas");
+        const dpr = window.devicePixelRatio || 1;
+        const w = Math.max(1, Math.round(window.innerWidth * dpr));
+        const h = Math.max(1, Math.round(window.innerHeight * dpr));
+        if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+        const ctx = canvas.getContext("2d");
+
+        if (state.sweepRunning) {
+          const cyc = sweepPhase % 16;
+          if (cyc < 6) {
+            const t = cyc / 6, barW = w * 0.28, x = (w + barW) * t - barW;
+            ctx.fillStyle = "#262626"; ctx.fillRect(0, 0, w, h);
+            const g = ctx.createLinearGradient(x, 0, x + barW, 0);
+            g.addColorStop(0, "#262626"); g.addColorStop(0.5, "#ffffff"); g.addColorStop(1, "#262626");
+            ctx.fillStyle = g; ctx.fillRect(x, 0, barW, h);
+          } else if (cyc < 12) {
+            const t = (cyc - 6) / 6, barH = h * 0.28, y = (h + barH) * t - barH;
+            ctx.fillStyle = "#d9d9d9"; ctx.fillRect(0, 0, w, h);
+            const g = ctx.createLinearGradient(0, y, 0, y + barH);
+            g.addColorStop(0, "#d9d9d9"); g.addColorStop(0.5, "#000000"); g.addColorStop(1, "#d9d9d9");
+            ctx.fillStyle = g; ctx.fillRect(0, y, w, barH);
+          } else {
+            ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, w, h);
+          }
+          return;
+        }
+
+        ctx.fillStyle = TEST_COLORS[state.colorIndex].css;
+        ctx.fillRect(0, 0, w, h);
+        if (!state.enabled || state.compareOriginal) return;
+
+        const feather = (state.profile.edgeFeather || 0) * dpr;
+
+        if (state.profile.surroundDim > 0.05) {
+          const off = document.createElement("canvas");
+          off.width = w; off.height = h;
+          const octx = off.getContext("2d");
+          octx.fillStyle = `rgba(0,0,0,${state.profile.surroundDim / 100})`;
+          octx.fillRect(0, 0, w, h);
+          octx.globalCompositeOperation = "destination-out";
+          state.profile.bands.forEach(b => {
+            drawFeatheredStrip(octx, Math.round(b.x * w), Math.round((b.x + b.w) * w), h, feather, [0, 0, 0], 1.0);
+          });
+          ctx.drawImage(off, 0, 0);
+        }
+
+        // Exact 1:1 color pipeline matching EvenDisplay.app v1.1
+        state.profile.bands.forEach(b => {
+          const x0 = Math.round(b.x * w), x1 = Math.round((b.x + b.w) * w);
+          if (b.brightness > 0.05) drawFeatheredStrip(ctx, x0, x1, h, feather, [255, 255, 255], b.brightness / 100);
+          else if (b.brightness < -0.05) drawFeatheredStrip(ctx, x0, x1, h, feather, [0, 0, 0], Math.abs(b.brightness) / 100);
+
+          if (b.warmth > 0.05) drawFeatheredStrip(ctx, x0, x1, h, feather, [255, 158, 30], b.warmth / 100);
+          else if (b.warmth < -0.05) drawFeatheredStrip(ctx, x0, x1, h, feather, [38, 132, 255], Math.abs(b.warmth) / 100);
+
+          if (b.tint > 0.05) drawFeatheredStrip(ctx, x0, x1, h, feather, [255, 46, 209], b.tint / 100);
+          else if (b.tint < -0.05) drawFeatheredStrip(ctx, x0, x1, h, feather, [40, 235, 92], Math.abs(b.tint) / 100);
+
+          if (Math.abs(b.red) > 0.05) drawFeatheredStrip(ctx, x0, x1, h, feather, b.red > 0 ? [255, 0, 0] : [0, 255, 255], Math.abs(b.red) / 100);
+          if (Math.abs(b.green) > 0.05) drawFeatheredStrip(ctx, x0, x1, h, feather, b.green > 0 ? [0, 255, 0] : [255, 0, 255], Math.abs(b.green) / 100);
+          if (Math.abs(b.blue) > 0.05) drawFeatheredStrip(ctx, x0, x1, h, feather, b.blue > 0 ? [0, 0, 255] : [255, 255, 0], Math.abs(b.blue) / 100);
+        });
+      }
+
+      function syncHoverEdgeClasses() {
+        document.querySelectorAll("#bands-layer .band-box").forEach(box => {
+          const bid = Number(box.dataset.bandId);
+          const show = !state.uiHidden && !state.sweepRunning && (state.alwaysShowEdges || state.hoveredEdgeBandId === bid);
+          box.classList.toggle("edges-visible", show);
+        });
+      }
+
+      function renderBandHandles() {
+        const layer = document.getElementById("bands-layer");
+        layer.innerHTML = "";
+        const disabledUI = state.uiHidden || state.sweepRunning;
+
+        state.profile.bands.forEach((b, idx) => {
+          const box = document.createElement("div");
+          const show = !disabledUI && (state.alwaysShowEdges || state.hoveredEdgeBandId === b.id);
+          box.className = "band-box" + (show ? " edges-visible" : "") + (disabledUI ? " disabled-ui" : "");
+          box.dataset.bandId = String(b.id);
+          box.style.left = `${b.x * 100}%`;
+          box.style.width = `${b.w * 100}%`;
+
+          const tag = document.createElement("div");
+          tag.className = "band-tag";
+          tag.textContent = `Band ${idx + 1} · B ${b.brightness >= 0 ? "+" : ""}${b.brightness.toFixed(0)}% · T ${b.warmth >= 0 ? "+" : ""}${b.warmth.toFixed(0)}% · ${(b.x * 100).toFixed(1)}%–${((b.x + b.w) * 100).toFixed(1)}%`;
+          box.appendChild(tag);
+
+          const leftH = document.createElement("div"); leftH.className = "resize-handle left";
+          const rightH = document.createElement("div"); rightH.className = "resize-handle right";
+          box.appendChild(leftH); box.appendChild(rightH);
+
+          // Show borders ONLY when cursor hovers over the left or right edge handles!
+          [leftH, rightH].forEach(h => {
+            h.addEventListener("pointerenter", () => {
+              state.hoveredEdgeBandId = b.id;
+              syncHoverEdgeClasses();
+            });
+            h.addEventListener("pointerleave", () => {
+              if (!box.classList.contains("dragging")) {
+                state.hoveredEdgeBandId = null;
+                syncHoverEdgeClasses();
+              }
+            });
+          });
+
+          box.addEventListener("pointerdown", (e) => {
+            if (e.target === leftH || e.target === rightH) return;
+            e.preventDefault();
+            state.selectedBandId = b.id;
+            renderControls();
+            beginDragUndo(`Move Band ${idx + 1}`);
+            box.classList.add("dragging");
+            const startX = e.clientX, origX = b.x, vw = Math.max(1, window.innerWidth);
+            const onMove = (ev) => {
+              b.x = Math.max(0, Math.min(1 - b.w, origX + (ev.clientX - startX) / vw));
+              box.style.left = `${b.x * 100}%`;
+              tag.textContent = `Band ${idx + 1} · B ${b.brightness >= 0 ? "+" : ""}${b.brightness.toFixed(0)}% · T ${b.warmth >= 0 ? "+" : ""}${b.warmth.toFixed(0)}% · ${(b.x * 100).toFixed(1)}%–${((b.x + b.w) * 100).toFixed(1)}%`;
+              renderCanvas(); updateExportBox();
+            };
+            const onUp = () => {
+              box.classList.remove("dragging");
+              window.removeEventListener("pointermove", onMove);
+              window.removeEventListener("pointerup", onUp);
+              saveState(); commitDragUndo(); renderAll();
+            };
+            window.addEventListener("pointermove", onMove);
+            window.addEventListener("pointerup", onUp);
+          });
+
+          leftH.addEventListener("pointerdown", (e) => {
+            e.preventDefault(); e.stopPropagation();
+            state.selectedBandId = b.id;
+            beginDragUndo(`Resize Band ${idx + 1} Left`);
+            box.classList.add("dragging");
+            const startX = e.clientX, origX = b.x, origR = b.x + b.w, vw = Math.max(1, window.innerWidth);
+            const onMove = (ev) => {
+              const nx = Math.max(0, Math.min(origR - 0.015, origX + (ev.clientX - startX) / vw));
+              b.x = nx; b.w = origR - nx;
+              box.style.left = `${b.x * 100}%`; box.style.width = `${b.w * 100}%`;
+              tag.textContent = `Band ${idx + 1} · B ${b.brightness >= 0 ? "+" : ""}${b.brightness.toFixed(0)}% · T ${b.warmth >= 0 ? "+" : ""}${b.warmth.toFixed(0)}% · ${(b.x * 100).toFixed(1)}%–${((b.x + b.w) * 100).toFixed(1)}%`;
+              renderCanvas(); updateExportBox();
+            };
+            const onUp = () => {
+              box.classList.remove("dragging");
+              state.hoveredEdgeBandId = null;
+              window.removeEventListener("pointermove", onMove);
+              window.removeEventListener("pointerup", onUp);
+              saveState(); commitDragUndo(); renderAll();
+            };
+            window.addEventListener("pointermove", onMove);
+            window.addEventListener("pointerup", onUp);
+          });
+
+          rightH.addEventListener("pointerdown", (e) => {
+            e.preventDefault(); e.stopPropagation();
+            state.selectedBandId = b.id;
+            beginDragUndo(`Resize Band ${idx + 1} Right`);
+            box.classList.add("dragging");
+            const startX = e.clientX, origW = b.w, vw = Math.max(1, window.innerWidth);
+            const onMove = (ev) => {
+              b.w = Math.max(0.015, Math.min(1 - b.x, origW + (ev.clientX - startX) / vw));
+              box.style.width = `${b.w * 100}%`;
+              tag.textContent = `Band ${idx + 1} · B ${b.brightness >= 0 ? "+" : ""}${b.brightness.toFixed(0)}% · T ${b.warmth >= 0 ? "+" : ""}${b.warmth.toFixed(0)}% · ${(b.x * 100).toFixed(1)}%–${((b.x + b.w) * 100).toFixed(1)}%`;
+              renderCanvas(); updateExportBox();
+            };
+            const onUp = () => {
+              box.classList.remove("dragging");
+              state.hoveredEdgeBandId = null;
+              window.removeEventListener("pointermove", onMove);
+              window.removeEventListener("pointerup", onUp);
+              saveState(); commitDragUndo(); renderAll();
+            };
+            window.addEventListener("pointermove", onMove);
+            window.addEventListener("pointerup", onUp);
+          });
+
+          layer.appendChild(box);
+        });
+      }
+
+      // Immediately clear edge hover whenever cursor enters the control panel so borders vanish while adjusting sliders
+      document.getElementById("panel").addEventListener("pointerenter", () => {
+        if (state.hoveredEdgeBandId !== null) {
+          state.hoveredEdgeBandId = null;
+          syncHoverEdgeClasses();
+        }
+      });
+
+      function renderColorPills() {
+        const box = document.getElementById("color-pills");
+        box.innerHTML = "";
+        TEST_COLORS.forEach((c, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "color-pill" + (idx === state.colorIndex && !state.sweepRunning ? " active" : "");
+          btn.dataset.colorId = c.id;
+          btn.innerHTML = `<span class="swatch" style="background:${c.css};"></span>${c.label}`;
+          btn.addEventListener("click", () => {
+            stopSweep();
+            state.colorIndex = idx;
+            renderColorPills();
+            document.getElementById("white-tip").classList.toggle("visible", c.id === "white");
+            renderCanvas();
+          });
+          box.appendChild(btn);
+        });
+        document.getElementById("white-tip").classList.toggle("visible", TEST_COLORS[state.colorIndex].id === "white");
+      }
+
+      function updateExportBox() {
+        const lines = state.profile.bands.map((b, i) =>
+          `Band ${i + 1}: x=${(b.x * 100).toFixed(1)}%..${((b.x + b.w) * 100).toFixed(1)}%, B=${b.brightness >= 0 ? "+" : ""}${b.brightness.toFixed(1)}%, Temp=${b.warmth >= 0 ? "+" : ""}${b.warmth.toFixed(1)}%, Tint=${b.tint >= 0 ? "+" : ""}${b.tint.toFixed(1)}%`
+        );
+        lines.push(`Outside Dim: ${state.profile.surroundDim.toFixed(1)}% | Feather: ${state.profile.edgeFeather.toFixed(1)}px`);
+        document.getElementById("export-box").textContent = lines.join("\n");
+      }
+
+      function renderControls() {
+        document.getElementById("btn-undo").disabled = !state.undoStack.length;
+        document.getElementById("btn-undo").textContent = state.undoStack.length ? `Undo (${state.undoStack.length})` : "Undo";
+        document.getElementById("btn-redo").disabled = !state.redoStack.length;
+
+        const cmpBtn = document.getElementById("btn-compare");
+        cmpBtn.classList.toggle("warn-on", state.compareOriginal);
+        cmpBtn.textContent = state.compareOriginal ? "Original (C)" : "Compare (C)";
+
+        document.getElementById("chk-enabled").checked = state.enabled;
+        document.getElementById("chk-always-edges").checked = state.alwaysShowEdges;
+        document.getElementById("rng-surround").value = String(state.profile.surroundDim);
+        document.getElementById("val-surround").textContent = `${state.profile.surroundDim.toFixed(1)}%`;
+        document.getElementById("rng-feather").value = String(state.profile.edgeFeather);
+        document.getElementById("val-feather").textContent = `${state.profile.edgeFeather.toFixed(1)} px`;
+
+        document.getElementById("panel").classList.toggle("hidden-ui", state.uiHidden);
+        document.getElementById("top-bar").classList.toggle("hidden-ui", state.uiHidden);
+        document.getElementById("mini-restore").classList.toggle("visible", state.uiHidden);
+
+        const sweepBtn = document.getElementById("btn-sweep-toggle");
+        sweepBtn.textContent = state.sweepRunning ? "Stop White/Gray Sweep" : "Run White/Gray Sweep";
+        sweepBtn.classList.toggle("warn-on", state.sweepRunning);
+
+        const cards = document.getElementById("band-cards");
+        cards.innerHTML = "";
+        state.profile.bands.forEach((b, idx) => {
+          const showRGB = state.expandedRGB.has(b.id);
+          const card = document.createElement("div");
+          card.className = "band-card" + (b.id === state.selectedBandId ? " selected" : "");
+          card.innerHTML = `
+            <div class="row" style="justify-content:space-between;margin-bottom:4px;">
+              <strong style="font-size:12.5px;">Band ${idx + 1} <span class="mono" style="color:var(--muted);font-weight:400;">(${(b.x * 100).toFixed(1)}%–${((b.x + b.w) * 100).toFixed(1)}%)</span></strong>
+              <div class="row">
+                <button class="btn btn-rgb-toggle" style="padding:2px 7px;font-size:11px;">${showRGB ? "Hide RGB" : "Fine RGB"}</button>
+                ${state.profile.bands.length > 1 ? `<button class="btn danger btn-del-band" style="padding:2px 7px;font-size:11px;">Remove</button>` : ""}
+              </div>
+            </div>
+            <div class="slider-line">
+              <span>Brightness</span>
+              <input type="range" class="rng-bright" min="-50" max="50" step="0.5" value="${b.brightness}" />
+              <span class="mono val-bright" style="text-align:right;">${b.brightness >= 0 ? "+" : ""}${b.brightness.toFixed(1)}%</span>
+            </div>
+            <div class="slider-line">
+              <span>Temp (Cool↔Warm)</span>
+              <input type="range" class="rng-warm" min="-40" max="40" step="0.5" value="${b.warmth}" />
+              <span class="mono val-warm" style="text-align:right;">${b.warmth >= 0 ? "+" : ""}${b.warmth.toFixed(1)}%</span>
+            </div>
+            <div class="slider-line">
+              <span>Tint (Grn↔Mag)</span>
+              <input type="range" class="rng-tint" min="-40" max="40" step="0.5" value="${b.tint}" />
+              <span class="mono val-tint" style="text-align:right;">${b.tint >= 0 ? "+" : ""}${b.tint.toFixed(1)}%</span>
+            </div>
+            ${showRGB ? `
+            <div class="slider-line">
+              <span>Red Trim</span>
+              <input type="range" class="rng-r" min="-30" max="30" step="0.5" value="${b.red}" />
+              <span class="mono val-r" style="text-align:right;">${b.red >= 0 ? "+" : ""}${b.red.toFixed(1)}%</span>
+            </div>
+            <div class="slider-line">
+              <span>Green Trim</span>
+              <input type="range" class="rng-g" min="-30" max="30" step="0.5" value="${b.green}" />
+              <span class="mono val-g" style="text-align:right;">${b.green >= 0 ? "+" : ""}${b.green.toFixed(1)}%</span>
+            </div>
+            <div class="slider-line">
+              <span>Blue Trim</span>
+              <input type="range" class="rng-b" min="-30" max="30" step="0.5" value="${b.blue}" />
+              <span class="mono val-b" style="text-align:right;">${b.blue >= 0 ? "+" : ""}${b.blue.toFixed(1)}%</span>
+            </div>` : ""}
+            <div class="slider-line">
+              <span>Position X</span>
+              <input type="range" class="rng-x" min="0" max="${Math.max(0.01, 1 - b.w).toFixed(4)}" step="0.002" value="${b.x}" />
+              <span class="mono val-x" style="text-align:right;">${(b.x * 100).toFixed(1)}%</span>
+            </div>
+            <div class="slider-line">
+              <span>Width</span>
+              <input type="range" class="rng-w" min="0.015" max="${Math.max(0.02, 1 - b.x).toFixed(4)}" step="0.002" value="${b.w}" />
+              <span class="mono val-w" style="text-align:right;">${(b.w * 100).toFixed(1)}%</span>
+            </div>
+          `;
+          card.addEventListener("pointerdown", () => {
+            if (state.selectedBandId !== b.id) {
+              state.selectedBandId = b.id;
+              cards.querySelectorAll(".band-card").forEach((c, ci) => c.classList.toggle("selected", state.profile.bands[ci]?.id === b.id));
+            }
+          });
+          card.querySelector(".btn-rgb-toggle").addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (state.expandedRGB.has(b.id)) state.expandedRGB.delete(b.id);
+            else state.expandedRGB.add(b.id);
+            renderControls();
+          });
+
+          const wire = (sel, label, fn) => {
+            const inp = card.querySelector(sel);
+            if (!inp) return;
+            inp.addEventListener("pointerdown", () => beginDragUndo(label));
+            inp.addEventListener("input", () => {
+              fn(parseFloat(inp.value)); saveState(); renderCanvas(); renderBandHandles(); updateExportBox();
+            });
+            inp.addEventListener("change", () => { commitDragUndo(); renderControls(); });
+          };
+          wire(".rng-bright", `Band ${idx + 1} Brightness`, v => { b.brightness = v; card.querySelector(".val-bright").textContent = `${v >= 0 ? "+" : ""}${v.toFixed(1)}%`; });
+          wire(".rng-warm", `Band ${idx + 1} Temp`, v => { b.warmth = v; card.querySelector(".val-warm").textContent = `${v >= 0 ? "+" : ""}${v.toFixed(1)}%`; });
+          wire(".rng-tint", `Band ${idx + 1} Tint`, v => { b.tint = v; card.querySelector(".val-tint").textContent = `${v >= 0 ? "+" : ""}${v.toFixed(1)}%`; });
+          wire(".rng-r", `Band ${idx + 1} Red`, v => { b.red = v; card.querySelector(".val-r").textContent = `${v >= 0 ? "+" : ""}${v.toFixed(1)}%`; });
+          wire(".rng-g", `Band ${idx + 1} Green`, v => { b.green = v; card.querySelector(".val-g").textContent = `${v >= 0 ? "+" : ""}${v.toFixed(1)}%`; });
+          wire(".rng-b", `Band ${idx + 1} Blue`, v => { b.blue = v; card.querySelector(".val-b").textContent = `${v >= 0 ? "+" : ""}${v.toFixed(1)}%`; });
+          wire(".rng-x", `Move Band ${idx + 1}`, v => { b.x = Math.max(0, Math.min(1 - b.w, v)); card.querySelector(".val-x").textContent = `${(b.x * 100).toFixed(1)}%`; });
+          wire(".rng-w", `Resize Band ${idx + 1}`, v => { b.w = Math.max(0.015, Math.min(1 - b.x, v)); card.querySelector(".val-w").textContent = `${(b.w * 100).toFixed(1)}%`; });
+
+          const delBtn = card.querySelector(".btn-del-band");
+          if (delBtn) {
+            delBtn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              recordUndo(`Remove Band ${idx + 1}`);
+              state.profile.bands = state.profile.bands.filter(x => x.id !== b.id);
+              state.selectedBandId = state.profile.bands[0].id;
+              saveState(); renderAll();
+            });
+          }
+          cards.appendChild(card);
+        });
+        updateExportBox();
+      }
+
+      function renderAll() {
+        renderColorPills();
+        renderBandHandles();
+        renderControls();
+        renderCanvas();
+      }
+
+      function startSweep() {
+        state.sweepRunning = true;
+        sweepStart = performance.now();
+        const tick = (now) => {
+          if (!state.sweepRunning) return;
+          sweepPhase = (now - sweepStart) / 1000;
+          renderCanvas();
+          sweepRAF = requestAnimationFrame(tick);
+        };
+        sweepRAF = requestAnimationFrame(tick);
+        renderAll();
+      }
+
+      function stopSweep() {
+        state.sweepRunning = false;
+        if (sweepRAF) cancelAnimationFrame(sweepRAF);
+        sweepRAF = null;
+      }
+
+      // Draggable panel
+      (() => {
+        const panel = document.getElementById("panel");
+        const handle = document.getElementById("panel-drag-handle");
+        handle.addEventListener("pointerdown", (e) => {
+          if (e.target.tagName === "BUTTON") return;
+          e.preventDefault();
+          const rect = panel.getBoundingClientRect();
+          const offX = e.clientX - rect.left, offY = e.clientY - rect.top;
+          panel.style.right = "auto"; panel.style.bottom = "auto";
+          panel.style.left = rect.left + "px"; panel.style.top = rect.top + "px";
+          const onMove = (ev) => {
+            panel.style.left = Math.max(8, Math.min(window.innerWidth - rect.width - 8, ev.clientX - offX)) + "px";
+            panel.style.top = Math.max(8, Math.min(window.innerHeight - 60, ev.clientY - offY)) + "px";
+          };
+          const onUp = () => { window.removeEventListener("pointermove", onMove); window.removeEventListener("pointerup", onUp); };
+          window.addEventListener("pointermove", onMove);
+          window.addEventListener("pointerup", onUp);
+        });
+      })();
+
+      // Wire actions
+      document.getElementById("btn-undo").addEventListener("click", undo);
+      document.getElementById("btn-redo").addEventListener("click", redo);
+      document.getElementById("btn-revert").addEventListener("click", revertAll);
+      document.getElementById("btn-compare").addEventListener("click", () => { state.compareOriginal = !state.compareOriginal; renderAll(); });
+      document.getElementById("chk-enabled").addEventListener("change", (e) => { recordUndo(e.target.checked ? "Enable Compensation" : "Disable Compensation"); state.enabled = e.target.checked; saveState(); renderAll(); });
+      document.getElementById("chk-always-edges").addEventListener("change", (e) => { state.alwaysShowEdges = e.target.checked; syncHoverEdgeClasses(); });
+      document.getElementById("btn-hide-ui").addEventListener("click", () => { state.uiHidden = true; renderAll(); });
+      document.getElementById("mini-restore").addEventListener("click", () => { state.uiHidden = false; renderAll(); });
+      document.getElementById("btn-add-band").addEventListener("click", () => {
+        if (state.profile.bands.length >= 6) return;
+        recordUndo("Add Band");
+        const nextId = Math.max(0, ...state.profile.bands.map(b => b.id)) + 1;
+        state.profile.bands.push({ id: nextId, x: 0.65, w: 0.18, brightness: 8.0, warmth: 0.0, tint: 0.0, red: 0.0, green: 0.0, blue: 0.0 });
+        state.selectedBandId = nextId;
+        saveState(); renderAll();
+      });
+      document.getElementById("btn-reset-bands").addEventListener("click", () => {
+        recordUndo("Reset 2 Bands");
+        state.profile = defaultProfile();
+        state.selectedBandId = 1;
+        state.enabled = true;
+        saveState(); toast("Reset to 2 default bands (Cmd+Z to undo)"); renderAll();
+      });
+
+      const surInp = document.getElementById("rng-surround");
+      surInp.addEventListener("pointerdown", () => beginDragUndo("Adjust Outside Dim"));
+      surInp.addEventListener("input", () => { state.profile.surroundDim = parseFloat(surInp.value); document.getElementById("val-surround").textContent = `${state.profile.surroundDim.toFixed(1)}%`; saveState(); renderCanvas(); updateExportBox(); });
+      surInp.addEventListener("change", () => commitDragUndo());
+
+      const fthInp = document.getElementById("rng-feather");
+      fthInp.addEventListener("pointerdown", () => beginDragUndo("Adjust Edge Feather"));
+      fthInp.addEventListener("input", () => { state.profile.edgeFeather = parseFloat(fthInp.value); document.getElementById("val-feather").textContent = `${state.profile.edgeFeather.toFixed(1)} px`; saveState(); renderCanvas(); updateExportBox(); });
+      fthInp.addEventListener("change", () => commitDragUndo());
+
+      document.getElementById("btn-fullscreen").addEventListener("click", () => {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(() => {});
+        else document.exitFullscreen?.().catch(() => {});
+      });
+
+      document.getElementById("btn-sweep-toggle").addEventListener("click", () => {
+        if (state.sweepRunning) { stopSweep(); renderAll(); } else { startSweep(); }
+      });
+
+      document.getElementById("btn-export-json").addEventListener("click", () => {
+        const json = JSON.stringify(normalizeProfile(state.profile), null, 2);
+        const blob = new Blob([json], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = "my-macbook.evendisplay.json";
+        document.body.appendChild(a); a.click(); a.remove();
+        URL.revokeObjectURL(url);
+        toast("Exported my-macbook.evendisplay.json (import into EvenDisplay.app)");
+      });
+
+      const fileInp = document.getElementById("file-import");
+      document.getElementById("btn-import-json").addEventListener("click", () => fileInp.click());
+      fileInp.addEventListener("change", () => {
+        const file = fileInp.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const parsed = JSON.parse(String(reader.result));
+            recordUndo("Import " + file.name);
+            state.profile = normalizeProfile(parsed);
+            state.selectedBandId = state.profile.bands[0].id;
+            state.enabled = true;
+            saveState(); toast(`Imported ${file.name} (${state.profile.bands.length} bands)`); renderAll();
+          } catch (_) { toast("Invalid .evendisplay.json file"); }
+          fileInp.value = "";
+        };
+        reader.readAsText(file);
+      });
+
+      document.getElementById("btn-copy-cal").addEventListener("click", () => {
+        const txt = document.getElementById("export-box").textContent;
+        if (navigator.clipboard) navigator.clipboard.writeText(txt).then(() => toast("Copied calibration summary")).catch(() => {});
+      });
+
+      window.addEventListener("keydown", (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.altKey && e.key === "0") { e.preventDefault(); revertAll(); return; }
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "z") { e.preventDefault(); if (e.shiftKey) redo(); else undo(); return; }
+        if (e.key === "Escape") {
+          if (state.sweepRunning) { stopSweep(); renderAll(); return; }
+          if (state.uiHidden) { state.uiHidden = false; renderAll(); return; }
+        }
+        const k = e.key.toLowerCase();
+        if (k === "h") { state.uiHidden = !state.uiHidden; renderAll(); return; }
+        if (k === "c") { state.compareOriginal = !state.compareOriginal; renderAll(); return; }
+        if (/^[1-9]$/.test(e.key)) {
+          const idx = parseInt(e.key, 10) - 1;
+          if (idx < TEST_COLORS.length) { stopSweep(); state.colorIndex = idx; renderColorPills(); renderCanvas(); }
+          return;
+        }
+        if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+          const b = state.profile.bands.find(x => x.id === state.selectedBandId);
+          if (!b) return;
+          e.preventDefault();
+          recordUndo(`Nudge Band ${b.id}`);
+          const step = e.shiftKey ? 0.01 : 0.001;
+          b.x = Math.max(0, Math.min(1 - b.w, b.x + (e.key === "ArrowRight" ? step : -step)));
+          saveState(); renderAll();
+        }
+      });
+
+      window.addEventListener("resize", renderCanvas);
+      loadState();
+      renderAll();
+
+      // Automated headless Chrome verification (?selftest=1)
+      if (new URLSearchParams(window.location.search).get("selftest") === "1") {
+        const results = [];
+        const check = (cond, name) => results.push({ pass: !!cond, name });
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+          state.profile = defaultProfile();
+          state.enabled = true;
+          state.alwaysShowEdges = false;
+          state.hoveredEdgeBandId = null;
+          state.colorIndex = 0;
+          state.undoStack = [];
+          state.redoStack = [];
+          renderAll();
+
+          const boxes = document.querySelectorAll("#bands-layer .band-box");
+          check(boxes.length === 2, "Starts with 2 movable bands");
+          check(!boxes[0].classList.contains("edges-visible"), "Band edges are HIDDEN by default for unobstructed eye-to-eye matching");
+
+          // Simulate hovering edge -> appears, leaving -> disappears
+          state.hoveredEdgeBandId = 1;
+          syncHoverEdgeClasses();
+          check(boxes[0].classList.contains("edges-visible"), "Band 1 edges APPEAR on edge hover");
+          state.hoveredEdgeBandId = null;
+          syncHoverEdgeClasses();
+          check(!boxes[0].classList.contains("edges-visible"), "Band 1 edges DISAPPEAR when cursor leaves edge");
+
+          recordUndo("Adjust Band 1");
+          state.profile.bands[0].x = 0.14;
+          state.profile.bands[0].brightness = 15.0;
+          state.profile.bands[0].warmth = 25.0;
+          renderAll();
+
+          for (const cid of ["white", "red", "green", "blue", "gray50"]) {
+            document.querySelector(`[data-color-id="${cid}"]`).click();
+            check(Math.abs(state.profile.bands[0].x - 0.14) < 0.0001 && state.profile.bands[0].warmth === 25.0, `Band 1 stays locked on ${cid}`);
+          }
+
+          // Pixel verify Brightness + Warmth on 50% Gray (R > B and brighter than outside)
+          const canvas = document.getElementById("main-canvas");
+          const ctx = canvas.getContext("2d");
+          const pxIn = ctx.getImageData(Math.round(canvas.width * 0.22), 20, 1, 1).data;
+          const pxOut = ctx.getImageData(Math.round(canvas.width * 0.88), 20, 1, 1).data;
+          check(pxIn[0] > pxIn[2] && pxIn[0] > pxOut[0], `Brightness + Warmth visibly shift Band 1 pixels (in=${pxIn[0]},${pxIn[1]},${pxIn[2]} vs out=${pxOut[0]})`);
+
+          document.getElementById("btn-undo").click();
+          check(Math.abs(state.profile.bands[0].x - 0.0) < 0.0001, "Undo restores Band 1 position");
+          document.getElementById("btn-redo").click();
+          check(Math.abs(state.profile.bands[0].x - 0.14) < 0.0001, "Redo re-applies Band 1 position");
+          document.getElementById("btn-revert").click();
+          check(state.enabled === false, "Revert restores stock display");
+          localStorage.removeItem(STORAGE_KEY);
+        } catch (err) {
+          results.push({ pass: false, name: "Runtime error: " + err.message });
+        }
+        const pre = document.createElement("pre");
+        pre.id = "selftest-result";
+        pre.textContent = JSON.stringify({
+          passed: results.filter(r => r.pass).length,
+          failed: results.filter(r => !r.pass).length,
+          results
+        }, null, 2);
+        document.body.appendChild(pre);
+      }
+    })();
+  </script>
+</body>
+</html>
