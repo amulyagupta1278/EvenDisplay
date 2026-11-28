@@ -3,7 +3,7 @@
 **Audit & Implementation Date:** 2026-11-28  
 **Repository:** `/Users/amulyagupta/.gemini/antigravity/scratch/EvenDisplay-live`  
 **Target Production Domain:** `https://evendisplay.amulyagupta.in/`  
-**Verification Scope:** Local static route resolution, headless Chrome rendered-DOM & visual verification, Swift native tests, and `impeccable` mechanical audit. **Live HTTPS production verification has NOT been run yet** because local commits are awaiting owner approval before pushing to GitHub Pages (`origin/main`).
+**Verification Scope:** Live HTTPS production verification (`curl` + `dig` + GitHub Pages API), Google Search Console property & sitemap verification (`Success`, `3` discovered pages), local static/Chrome rendered-DOM verification, Swift native tests (`27/27`), Web Studio Chrome tests (`13/13`), SEO audit (`88/88`), and `impeccable` mechanical audit (`0` findings).
 
 ---
 
@@ -53,9 +53,12 @@
 | Mechanical UI & Accessibility Detector (`impeccable detect --json`) | **PASS** | `0` findings (`[]`) on `index.html`, `macbook-vertical-bands-guide.html`, and `404.html` |
 | Responsive Desktop (`1440×900`, `1440×3400`) & Mobile (`500×900`) Visual Checks | **PASS** | Visually verified via headless Chrome screenshots; zero overlap or horizontal overflow |
 | Secret / Placeholder Token Exposure Check | **PASS** | Verified zero API keys, GitHub tokens, or placeholder strings across all site HTML |
-| Live HTTPS Production HTTP Status / TLS / Redirect Check | **NOT TESTED** | Local commits not pushed yet; must be run after pushing to `origin/main` |
-| Live Google Lighthouse / PageSpeed Insights (Mobile & Desktop) | **NOT TESTED** | Local Node/Lighthouse unavailable (broken Homebrew `icu4c` dylib) & site awaiting live Pages deploy; run PageSpeed Insights post-deploy |
-| Live Google Rich Results Test & Meta/LinkedIn Share Debuggers | **MANUAL ACTION REQUIRED** | Run immediately after `https://evendisplay.amulyagupta.in/` deploys live |
+| Live HTTPS Production HTTP Status / TLS Check | **PASS** | DNS CNAME → `amulyagupta1278.github.io`, TLS cert approved (exp `2027-02-26`); HTTP `200` on `/`, `/studio.html`, `/macbook-vertical-bands-guide.html`, `/robots.txt`, `/sitemap.xml`, `/assets/og-card.png`, `/site.webmanifest`; HTTP `404` on invalid paths |
+| Google Search Console Property & Sitemap Submission | **PASS** | `https://evendisplay.amulyagupta.in/` verified via Domain Name Provider; `sitemap.xml` submitted → **Success (`3` discovered pages)**; HTML verification meta tag wired locally |
+| GitHub Pages `Enforce HTTPS` (`http://` → `https://` redirect) | **MANUAL ACTION REQUIRED** | Currently `"https_enforced": false` in GitHub Pages API; toggle **Enforce HTTPS** in repo Settings → Pages (or approve `gh api` update) |
+| URL Inspection → Request Indexing (CAPTCHA gated) | **MANUAL ACTION REQUIRED** | Clicking **Request Indexing** in GSC triggered a bot check/CAPTCHA; complete manually in browser for `/`, `/studio.html`, and `/macbook-vertical-bands-guide.html` |
+| Live Google Lighthouse / PageSpeed Insights (Mobile & Desktop) | **MANUAL ACTION REQUIRED** | Local Node/Lighthouse unavailable (broken Homebrew `icu4c`); run https://pagespeed.web.dev/ on `https://evendisplay.amulyagupta.in/` |
+| Live Google Rich Results Test & Meta/LinkedIn Share Debuggers | **MANUAL ACTION REQUIRED** | Run on `https://evendisplay.amulyagupta.in/` |
 | Manual VoiceOver & Full Keyboard Screen-Reader Walkthrough | **MANUAL ACTION REQUIRED** | Automated scans cannot certify full WCAG 2.2 AA conformance alone |
 
 ---
