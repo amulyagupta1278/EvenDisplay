@@ -31,6 +31,7 @@ def render_head_block(site_cfg: dict, route: dict) -> str:
     bing_tok = os.environ.get("EVENDISPLAY_BING_TOKEN", site_cfg["verification"].get("bing", "")).strip()
     meta_tok = os.environ.get("EVENDISPLAY_META_TOKEN", site_cfg["verification"].get("meta", "")).strip()
     ga4_id = os.environ.get("EVENDISPLAY_GA4_ID", site_cfg["analytics"].get("ga4MeasurementId", "")).strip()
+    gtm_id = os.environ.get("EVENDISPLAY_GTM_ID", site_cfg["analytics"].get("gtmContainerId", "")).strip()
 
     lines = [
         "  <!-- SEO:START -->",
@@ -60,6 +61,17 @@ def render_head_block(site_cfg: dict, route: dict) -> str:
 
     if ga4_id:
         lines.append(f'  <meta name="evendisplay-ga4-id" content="{esc(ga4_id)}" />')
+
+    if gtm_id and not is_noindex:
+        lines.extend([
+            "  <script>",
+            "    window.dataLayer = window.dataLayer || [];",
+            "    function gtag(){dataLayer.push(arguments);}",
+            "    window.dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});",
+            "    gtag('js', new Date());",
+            "  </script>",
+            f'  <script async src="https://www.googletagmanager.com/gtm.js?id={esc(gtm_id)}"></script>',
+        ])
 
     lines.extend([
         f'  <meta property="og:type" content="{esc(route["ogType"])}" />',

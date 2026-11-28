@@ -26,7 +26,8 @@
       "meta": ""
     },
     "analytics": {
-      "ga4MeasurementId": ""
+      "ga4MeasurementId": "",
+      "gtmContainerId": "GTM-WQ2NF8LR"
     }
   },
   "routes": [

@@ -1,7 +1,7 @@
 # Phase 8 — Analytics & Event Measurement Architecture
 
 **Date:** 2026-11-28  
-**Current Status:** Optional privacy-first GA4 loader implemented (`site/assets/analytics.js`), **inactive by default** (`0` external requests, `0` cookies, `0` fabricated IDs) until you explicitly supply a real GA4 Measurement ID.
+**Current Status:** Google Tag Manager container **`GTM-WQ2NF8LR`** configured in `site/seo-config.json` and synced to all 3 indexable routes (`/`, `/studio.html`, `/macbook-vertical-bands-guide.html`). `site/assets/analytics.js` bridges all 10 semantic product `data-track` events into `window.dataLayer` (while honoring `Do Not Track` and `window.EVENDISPLAY_CONSENT_DENIED`). Direct `ga4MeasurementId` remains optional/empty so GA4 can be fired inside GTM without double-counting.
 
 ---
 
