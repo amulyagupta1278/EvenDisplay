@@ -3,45 +3,83 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EvenDisplay — Free MacBook Screen Diagnostic, Pixel Cleaner &amp; Band Compensator</title>
-  <meta name="description" content="Free, open-source macOS utility and browser studio for MacBook screen issues: compensate dim vertical bands, clear IPS ghosting and image retention, spot stuck pixels, balance uneven color tint, and test display uniformity. 100% reversible." />
-  <meta name="keywords" content="MacBook screen test, MacBook Pro dim vertical bands fix, MacBook pixel cleaner, MacBook screen ghosting image retention fix, MacBook stuck pixel test, MacBook display uniformity test, used MacBook screen check, EvenDisplay" />
+  <!-- SEO:START -->
+  <title>EvenDisplay — Free MacBook Screen Test &amp; Band Compensator</title>
+  <meta name="description" content="Free, open-source macOS app and browser studio for MacBook screen issues: balance dim vertical bands, clear IPS ghosting, fix tint drift, and spot stuck pixels." />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
   <meta name="theme-color" content="#ffffff" />
   <link rel="canonical" href="https://evendisplay.amulyagupta.in/" />
-  <link rel="icon" type="image/png" href="assets/icon.png" />
-
-  <!-- Verification & Analytics Slots (ready for Google Search Console, GA4, Meta Domain Verification & Pixel) -->
-  <!-- <meta name="google-site-verification" content="YOUR_GOOGLE_VERIFICATION_TOKEN" /> -->
-  <!-- <meta name="facebook-domain-verification" content="YOUR_META_DOMAIN_TOKEN" /> -->
-
-  <!-- OpenGraph & Twitter Social Cards -->
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/icon-64.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/icon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png" />
+  <link rel="manifest" href="site.webmanifest" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="EvenDisplay" />
-  <meta property="og:title" content="EvenDisplay — Free MacBook Screen Diagnostic, Pixel Cleaner &amp; Band Compensator" />
-  <meta property="og:description" content="Compensate dim vertical bands, clear IPS image retention, spot stuck pixels, and verify MacBook screen uniformity across 9 colors — free, local, and 100% reversible." />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:title" content="EvenDisplay — Free MacBook Screen Test, Pixel Cleaner &amp; Band Compensator" />
+  <meta property="og:description" content="Compensate dim vertical bands, clear IPS image retention, spot stuck pixels, and verify MacBook display uniformity across 9 colors — free, local, and 100% reversible." />
   <meta property="og:url" content="https://evendisplay.amulyagupta.in/" />
   <meta property="og:image" content="https://evendisplay.amulyagupta.in/assets/og-card.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="EvenDisplay MacBook screen uniformity diagnostic, IPS ghosting sweep, and reversible vertical band compensator preview" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="EvenDisplay — Complete Free Toolkit for MacBook Screen Issues" />
   <meta name="twitter:description" content="Diagnose and balance dim vertical bands, IPS ghosting, stuck pixels, and uneven tint on MacBook Pro &amp; Air displays. Native macOS app + Web Studio." />
   <meta name="twitter:image" content="https://evendisplay.amulyagupta.in/assets/og-card.png" />
-
-  <!-- Structured Data: SoftwareApplication + FAQPage -->
+  <meta name="twitter:image:alt" content="EvenDisplay MacBook screen uniformity diagnostic, IPS ghosting sweep, and reversible vertical band compensator preview" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@graph": [
       {
+        "@type": "Person",
+        "@id": "https://evendisplay.amulyagupta.in/#author",
+        "name": "Amulya Gupta",
+        "url": "https://amulyagupta.in/"
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://evendisplay.amulyagupta.in/#website",
+        "url": "https://evendisplay.amulyagupta.in/",
+        "name": "EvenDisplay",
+        "description": "Free, open-source MacBook screen uniformity tester, IPS ghosting sweep, and reversible vertical band compensator.",
+        "inLanguage": "en",
+        "publisher": {
+          "@id": "https://evendisplay.amulyagupta.in/#author"
+        }
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://evendisplay.amulyagupta.in/#webpage",
+        "url": "https://evendisplay.amulyagupta.in/",
+        "name": "EvenDisplay — Free MacBook Screen Test & Band Compensator",
+        "isPartOf": {
+          "@id": "https://evendisplay.amulyagupta.in/#website"
+        },
+        "about": {
+          "@id": "https://evendisplay.amulyagupta.in/#software"
+        },
+        "primaryImageOfPage": {
+          "@type": "ImageObject",
+          "url": "https://evendisplay.amulyagupta.in/assets/og-card.png",
+          "width": 1200,
+          "height": 630
+        },
+        "inLanguage": "en"
+      },
+      {
         "@type": "SoftwareApplication",
+        "@id": "https://evendisplay.amulyagupta.in/#software",
         "name": "EvenDisplay",
         "operatingSystem": "macOS 13.0+, Web",
         "applicationCategory": "UtilitiesApplication",
         "softwareVersion": "1.0.0",
         "url": "https://evendisplay.amulyagupta.in/",
         "downloadUrl": "https://github.com/amulyagupta1278/EvenDisplay/releases/latest/download/EvenDisplay-v1.0.0.zip",
+        "codeRepository": "https://github.com/amulyagupta1278/EvenDisplay",
         "license": "https://opensource.org/licenses/MIT",
+        "image": "https://evendisplay.amulyagupta.in/assets/og-card.png",
         "description": "Free, open-source macOS display utility and browser studio to compensate dim vertical bands, clear temporary IPS ghosting, check stuck pixels, balance uneven color tint, and run 9-color MacBook screen uniformity diagnostics.",
         "offers": {
           "@type": "Offer",
@@ -49,13 +87,12 @@
           "priceCurrency": "USD"
         },
         "author": {
-          "@type": "Person",
-          "name": "Amulya Gupta",
-          "url": "https://amulyagupta.in/"
+          "@id": "https://evendisplay.amulyagupta.in/#author"
         }
       },
       {
         "@type": "FAQPage",
+        "@id": "https://evendisplay.amulyagupta.in/#faq",
         "mainEntity": [
           {
             "@type": "Question",
@@ -70,23 +107,23 @@
             "name": "What MacBook screen issues can EvenDisplay help with?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "EvenDisplay helps visually balance dim vertical bands and uneven color casts using a reversible click-through overlay, clears temporary IPS image retention and ghosting with full-screen sweeps, checks for stuck or dead pixels, and lets you run a lid-angle diagnostic before buying a used MacBook or paying for a display replacement."
+              "text": "EvenDisplay visually balances dim vertical bands and uneven color casts using a reversible click-through overlay, clears temporary IPS image retention and ghosting with full-screen sweeps, spots stuck or dead pixels, and provides a 2-minute lid-angle hardware diagnostic for MacBook Pro and Air screens."
             }
           },
           {
             "@type": "Question",
-            "name": "How can I tell if my MacBook screen issue is hardware or software?",
+            "name": "Will EvenDisplay tint my external monitor?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Take a screenshot with Command + Shift + 3 and view it on your phone or external monitor. If vertical bands, dark patches, or tint shifts do not appear in the screenshot, or still show on the Apple boot screen or shift when tilting the lid, the cause is physical display hardware."
+              "text": "No. The native macOS app queries CGDisplayIsBuiltin and anchors the overlay exclusively to your built-in MacBook panel."
             }
           },
           {
             "@type": "Question",
-            "name": "Is EvenDisplay safe and completely reversible?",
+            "name": "How do I undo everything cleanly?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Yes. EvenDisplay runs strictly as a transparent user-space window locked to your built-in MacBook display via CGDisplayIsBuiltin. It never modifies macOS system files, ColorSync ICC profiles, GPU registers, or NVRAM. Press Command + Option + 0 or quit the app to restore your stock screen immediately."
+              "text": "Press Cmd+Option+0 for an instant stock screen, double-click any slider to reset it to default, click Factory Reset in Preferences, or quit/delete EvenDisplay.app. Zero system files are ever modified."
             }
           }
         ]
@@ -94,6 +131,7 @@
     ]
   }
   </script>
+  <!-- SEO:END -->
 
   <style>
     :root {
@@ -1186,17 +1224,17 @@
 
   <header class="site-header">
     <div class="wrap-wide nav-bar">
-      <a class="brand" href="index.html">
-        <img src="assets/icon.png" alt="EvenDisplay icon" width="24" height="24" />
+      <a class="brand" href="/">
+        <img src="assets/icon-64.png" alt="EvenDisplay icon" width="24" height="24" decoding="async" />
         <span>EvenDisplay</span>
       </a>
       <nav class="nav-links" aria-label="Primary navigation">
         <a href="#calibration">How it works</a>
         <a href="#screen-issues">Screen issues</a>
-        <a href="macbook-vertical-bands-guide.html">Diagnostic guide</a>
+        <a href="macbook-vertical-bands-guide.html" data-track="read_diagnostic_guide">Diagnostic guide</a>
         <a href="#install">Install</a>
       </nav>
-      <a class="btn btn-primary btn-sm" href="studio.html">Open Web Studio</a>
+      <a class="btn btn-primary btn-sm" href="studio.html" data-track="open_web_studio" data-track-label="header_cta">Open Web Studio</a>
     </div>
   </header>
 
@@ -1210,8 +1248,8 @@
             Compensate dim vertical bands, clear IPS ghosting, balance uneven tint, and spot stuck pixels — free, local, and 100% reversible.
           </p>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="studio.html">Open Web Studio</a>
-            <a class="btn btn-secondary" href="#install">Download for Mac v1.0.0</a>
+            <a class="btn btn-primary" href="studio.html" data-track="open_web_studio" data-track-label="hero_primary">Open Web Studio</a>
+            <a class="btn btn-secondary" href="#install" data-track="jump_install" data-track-label="hero_download">Download for Mac v1.0.0</a>
           </div>
           <p class="hero-proof">
             Free &amp; open-source (MIT)<span>·</span>macOS 13+ &amp; browser<span>·</span>Zero system changes<span>·</span>1-keystroke revert
@@ -1239,10 +1277,10 @@
 
           <div class="sim-dock">
             <div class="mode-segmented" role="group" aria-label="Choose MacBook screen issue">
-              <button class="mode-btn active" type="button" data-mode="0">Dim Bands</button>
-              <button class="mode-btn" type="button" data-mode="1">IPS Ghosting</button>
-              <button class="mode-btn" type="button" data-mode="2">Color Cast</button>
-              <button class="mode-btn" type="button" data-mode="3">Stuck Pixels</button>
+              <button class="mode-btn active" type="button" data-mode="0" data-track="switch_sim_mode" data-track-label="dim_bands">Dim Bands</button>
+              <button class="mode-btn" type="button" data-mode="1" data-track="switch_sim_mode" data-track-label="ips_ghosting">IPS Ghosting</button>
+              <button class="mode-btn" type="button" data-mode="2" data-track="switch_sim_mode" data-track-label="color_cast">Color Cast</button>
+              <button class="mode-btn" type="button" data-mode="3" data-track="switch_sim_mode" data-track-label="stuck_pixels">Stuck Pixels</button>
             </div>
 
             <div class="slider-group">
@@ -1404,15 +1442,15 @@
               <h3>EvenDisplay.app for macOS 13+</h3>
               <p>Unzip, drag <strong>EvenDisplay.app</strong> into <code>/Applications</code>, and import your <code>.evendisplay.json</code> calibration from the Web Studio.</p>
               <div class="panel-actions">
-                <a class="btn btn-primary" href="https://github.com/amulyagupta1278/EvenDisplay/releases/latest/download/EvenDisplay-v1.0.0.zip">Download v1.0.0 (.zip)</a>
-                <a class="btn btn-secondary" href="https://github.com/amulyagupta1278/EvenDisplay" target="_blank" rel="noopener">Source on GitHub</a>
+                <a class="btn btn-primary" href="https://github.com/amulyagupta1278/EvenDisplay/releases/latest/download/EvenDisplay-v1.0.0.zip" data-track="download_mac_app" data-track-label="github_zip_v1">Download v1.0.0 (.zip)</a>
+                <a class="btn btn-secondary" href="https://github.com/amulyagupta1278/EvenDisplay" target="_blank" rel="noopener" data-track="open_github_repo">Source on GitHub</a>
               </div>
             </div>
             <div>
               <p style="margin:0 0 8px;font-size:13px;">Or install with Homebrew Cask:</p>
               <div class="cmd-box">
                 <code>brew install --cask amulyagupta1278/tap/evendisplay</code>
-                <button class="copy-btn" type="button" data-copy="brew install --cask amulyagupta1278/tap/evendisplay">Copy</button>
+                <button class="copy-btn" type="button" data-copy="brew install --cask amulyagupta1278/tap/evendisplay" data-track="copy_homebrew_cmd">Copy</button>
               </div>
             </div>
           </div>
@@ -1428,7 +1466,7 @@
             </div>
             <div class="cmd-box">
               <code>xattr -cr /Applications/EvenDisplay.app</code>
-              <button class="copy-btn" type="button" data-copy="xattr -cr /Applications/EvenDisplay.app">Copy</button>
+              <button class="copy-btn" type="button" data-copy="xattr -cr /Applications/EvenDisplay.app" data-track="copy_xattr_cmd">Copy</button>
             </div>
           </div>
         </div>
@@ -1492,6 +1530,7 @@
 
   <div id="copy-live-region" class="sr-only" aria-live="polite"></div>
 
+  <script defer src="assets/analytics.js"></script>
   <script>
     (() => {
       const reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;

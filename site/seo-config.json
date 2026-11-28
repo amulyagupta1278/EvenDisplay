@@ -1,0 +1,292 @@
+{
+  "site": {
+    "name": "EvenDisplay",
+    "baseUrl": "https://evendisplay.amulyagupta.in",
+    "locale": "en_US",
+    "lang": "en",
+    "themeColorLight": "#ffffff",
+    "themeColorDark": "#0f1116",
+    "author": {
+      "name": "Amulya Gupta",
+      "url": "https://amulyagupta.in/"
+    },
+    "repoUrl": "https://github.com/amulyagupta1278/EvenDisplay",
+    "downloadUrl": "https://github.com/amulyagupta1278/EvenDisplay/releases/latest/download/EvenDisplay-v1.0.0.zip",
+    "softwareVersion": "1.0.0",
+    "licenseUrl": "https://opensource.org/licenses/MIT",
+    "socialImage": {
+      "path": "/assets/og-card.png",
+      "width": 1200,
+      "height": 630,
+      "alt": "EvenDisplay MacBook screen uniformity diagnostic, IPS ghosting sweep, and reversible vertical band compensator preview"
+    },
+    "verification": {
+      "google": "",
+      "bing": "",
+      "meta": ""
+    },
+    "analytics": {
+      "ga4MeasurementId": ""
+    }
+  },
+  "routes": [
+    {
+      "file": "index.html",
+      "path": "/",
+      "inSitemap": true,
+      "lastmod": "2026-11-28",
+      "robots": "index, follow, max-image-preview:large, max-snippet:-1",
+      "themeColor": "#ffffff",
+      "title": "EvenDisplay — Free MacBook Screen Test & Band Compensator",
+      "description": "Free, open-source macOS app and browser studio for MacBook screen issues: balance dim vertical bands, clear IPS ghosting, fix tint drift, and spot stuck pixels.",
+      "ogType": "website",
+      "ogTitle": "EvenDisplay — Free MacBook Screen Test, Pixel Cleaner & Band Compensator",
+      "ogDescription": "Compensate dim vertical bands, clear IPS image retention, spot stuck pixels, and verify MacBook display uniformity across 9 colors — free, local, and 100% reversible.",
+      "twitterTitle": "EvenDisplay — Complete Free Toolkit for MacBook Screen Issues",
+      "twitterDescription": "Diagnose and balance dim vertical bands, IPS ghosting, stuck pixels, and uneven tint on MacBook Pro & Air displays. Native macOS app + Web Studio.",
+      "jsonLd": {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Person",
+            "@id": "https://evendisplay.amulyagupta.in/#author",
+            "name": "Amulya Gupta",
+            "url": "https://amulyagupta.in/"
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://evendisplay.amulyagupta.in/#website",
+            "url": "https://evendisplay.amulyagupta.in/",
+            "name": "EvenDisplay",
+            "description": "Free, open-source MacBook screen uniformity tester, IPS ghosting sweep, and reversible vertical band compensator.",
+            "inLanguage": "en",
+            "publisher": {
+              "@id": "https://evendisplay.amulyagupta.in/#author"
+            }
+          },
+          {
+            "@type": "WebPage",
+            "@id": "https://evendisplay.amulyagupta.in/#webpage",
+            "url": "https://evendisplay.amulyagupta.in/",
+            "name": "EvenDisplay — Free MacBook Screen Test & Band Compensator",
+            "isPartOf": {
+              "@id": "https://evendisplay.amulyagupta.in/#website"
+            },
+            "about": {
+              "@id": "https://evendisplay.amulyagupta.in/#software"
+            },
+            "primaryImageOfPage": {
+              "@type": "ImageObject",
+              "url": "https://evendisplay.amulyagupta.in/assets/og-card.png",
+              "width": 1200,
+              "height": 630
+            },
+            "inLanguage": "en"
+          },
+          {
+            "@type": "SoftwareApplication",
+            "@id": "https://evendisplay.amulyagupta.in/#software",
+            "name": "EvenDisplay",
+            "operatingSystem": "macOS 13.0+, Web",
+            "applicationCategory": "UtilitiesApplication",
+            "softwareVersion": "1.0.0",
+            "url": "https://evendisplay.amulyagupta.in/",
+            "downloadUrl": "https://github.com/amulyagupta1278/EvenDisplay/releases/latest/download/EvenDisplay-v1.0.0.zip",
+            "codeRepository": "https://github.com/amulyagupta1278/EvenDisplay",
+            "license": "https://opensource.org/licenses/MIT",
+            "image": "https://evendisplay.amulyagupta.in/assets/og-card.png",
+            "description": "Free, open-source macOS display utility and browser studio to compensate dim vertical bands, clear temporary IPS ghosting, check stuck pixels, balance uneven color tint, and run 9-color MacBook screen uniformity diagnostics.",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            },
+            "author": {
+              "@id": "https://evendisplay.amulyagupta.in/#author"
+            }
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://evendisplay.amulyagupta.in/#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Does MacBook Pro have a built-in pixel cleaner or screen test?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. macOS does not include a manual Pixel Cleaning, Pixel Refresh, or full-screen uniformity test in System Settings. EvenDisplay gives MacBook users a free 9-color uniformity test, IPS pixel conditioning sweep, and reversible screen band compensator."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What MacBook screen issues can EvenDisplay help with?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "EvenDisplay visually balances dim vertical bands and uneven color casts using a reversible click-through overlay, clears temporary IPS image retention and ghosting with full-screen sweeps, spots stuck or dead pixels, and provides a 2-minute lid-angle hardware diagnostic for MacBook Pro and Air screens."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Will EvenDisplay tint my external monitor?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. The native macOS app queries CGDisplayIsBuiltin and anchors the overlay exclusively to your built-in MacBook panel."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How do I undo everything cleanly?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Press Cmd+Option+0 for an instant stock screen, double-click any slider to reset it to default, click Factory Reset in Preferences, or quit/delete EvenDisplay.app. Zero system files are ever modified."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "file": "studio.html",
+      "path": "/studio.html",
+      "inSitemap": true,
+      "lastmod": "2026-11-28",
+      "robots": "index, follow, max-image-preview:large, max-snippet:-1",
+      "themeColor": "#0f1116",
+      "title": "MacBook Screen Uniformity Test & Calibration Studio — EvenDisplay",
+      "description": "Free full-screen 9-color MacBook display test, IPS ghosting sweep cleaner, and movable vertical band compensator. Runs locally in your browser and exports to Mac.",
+      "ogType": "website",
+      "ogTitle": "MacBook Screen Uniformity Test & Calibration Studio — EvenDisplay",
+      "ogDescription": "Inspect 9 full-screen test colors, run an IPS image-retention sweep, align movable vertical compensation bands, and export directly to EvenDisplay.app.",
+      "twitterTitle": "EvenDisplay Web Studio — Free MacBook Screen Uniformity Test",
+      "twitterDescription": "Zero-install 9-color MacBook display test, IPS ghosting sweep, and movable vertical band calibration studio.",
+      "jsonLd": {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebApplication",
+            "@id": "https://evendisplay.amulyagupta.in/studio.html#app",
+            "name": "EvenDisplay Web Calibration Studio",
+            "url": "https://evendisplay.amulyagupta.in/studio.html",
+            "applicationCategory": "UtilitiesApplication",
+            "browserRequirements": "Requires HTML5 Canvas and JavaScript",
+            "operatingSystem": "macOS, Any desktop browser",
+            "license": "https://opensource.org/licenses/MIT",
+            "image": "https://evendisplay.amulyagupta.in/assets/og-card.png",
+            "description": "Full-screen browser display tester with 9 solid uniformity colors, IPS image-retention sweep, and movable vertical band brightness/color compensator.",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            },
+            "author": {
+              "@type": "Person",
+              "name": "Amulya Gupta",
+              "url": "https://amulyagupta.in/"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "EvenDisplay",
+                "item": "https://evendisplay.amulyagupta.in/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Web Calibration Studio",
+                "item": "https://evendisplay.amulyagupta.in/studio.html"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "file": "macbook-vertical-bands-guide.html",
+      "path": "/macbook-vertical-bands-guide.html",
+      "inSitemap": true,
+      "lastmod": "2026-11-28",
+      "datePublished": "2026-11-25",
+      "robots": "index, follow, max-image-preview:large, max-snippet:-1",
+      "themeColor": "#ffffff",
+      "title": "MacBook Pro Dim Vertical Bands Diagnostic Guide — EvenDisplay",
+      "description": "Diagnose dim vertical bands, dark stripes, or ghosting on a MacBook Pro or Air in 2 minutes: screenshot check, lid-angle test, IPS sweep, and reversible workaround.",
+      "ogType": "article",
+      "ogTitle": "MacBook Pro Dim Vertical Bands Diagnostic Guide — EvenDisplay",
+      "ogDescription": "Honest 4-step diagnostic to tell hardware column-driver or flex-cable wear from temporary IPS image retention, plus a free reversible MacBook workaround.",
+      "twitterTitle": "Why Your MacBook Has Dim Vertical Bands — 2-Minute Diagnostic Guide",
+      "twitterDescription": "Isolate hardware COF/flex wear from temporary IPS ghosting with 4 verifiable steps, plus a reversible macOS band compensator.",
+      "jsonLd": {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "TechArticle",
+            "@id": "https://evendisplay.amulyagupta.in/macbook-vertical-bands-guide.html#article",
+            "headline": "Why your MacBook Pro has dim vertical bands — and what actually helps",
+            "description": "Four-step technical guide to isolate hardware column-driver or hinge flex-cable wear from temporary IPS image retention on a MacBook Pro or MacBook Air display.",
+            "datePublished": "2026-11-25",
+            "dateModified": "2026-11-28",
+            "inLanguage": "en",
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": "https://evendisplay.amulyagupta.in/macbook-vertical-bands-guide.html"
+            },
+            "image": {
+              "@type": "ImageObject",
+              "url": "https://evendisplay.amulyagupta.in/assets/og-card.png",
+              "width": 1200,
+              "height": 630
+            },
+            "author": {
+              "@type": "Person",
+              "name": "Amulya Gupta",
+              "url": "https://amulyagupta.in/"
+            },
+            "publisher": {
+              "@type": "Person",
+              "name": "Amulya Gupta",
+              "url": "https://amulyagupta.in/"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "EvenDisplay",
+                "item": "https://evendisplay.amulyagupta.in/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "MacBook Vertical Bands Diagnostic Guide",
+                "item": "https://evendisplay.amulyagupta.in/macbook-vertical-bands-guide.html"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "file": "404.html",
+      "path": "/404.html",
+      "inSitemap": false,
+      "lastmod": "2026-11-28",
+      "robots": "noindex, follow",
+      "themeColor": "#ffffff",
+      "title": "Page Not Found — EvenDisplay",
+      "description": "The page you requested could not be found on EvenDisplay. Return to the homepage, open the MacBook screen test studio, or read the diagnostic guide.",
+      "ogType": "website",
+      "ogTitle": "Page Not Found — EvenDisplay",
+      "ogDescription": "Return to EvenDisplay to test your MacBook display or download the free macOS utility.",
+      "twitterTitle": "Page Not Found — EvenDisplay",
+      "twitterDescription": "Return to EvenDisplay to test your MacBook display or download the free macOS utility.",
+      "jsonLd": null
+    }
+  ]
+}

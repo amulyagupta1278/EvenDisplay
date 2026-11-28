@@ -3,27 +3,78 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MacBook Screen Uniformity Test &amp; Pixel Cleaner Studio — EvenDisplay</title>
-  <meta name="description" content="Free full-screen MacBook display uniformity test (50% gray, white, RGB), IPS pixel sweep cleaner, and 2-band movable brightness compensator. Runs in your browser and exports to EvenDisplay.app." />
+  <!-- SEO:START -->
+  <title>MacBook Screen Uniformity Test &amp; Calibration Studio — EvenDisplay</title>
+  <meta name="description" content="Free full-screen 9-color MacBook display test, IPS ghosting sweep cleaner, and movable vertical band compensator. Runs locally in your browser and exports to Mac." />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+  <meta name="theme-color" content="#0f1116" />
   <link rel="canonical" href="https://evendisplay.amulyagupta.in/studio.html" />
-  <link rel="icon" type="image/png" href="assets/icon.png" />
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/icon-64.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/icon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png" />
+  <link rel="manifest" href="site.webmanifest" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="MacBook Screen Uniformity Test &amp; Pixel Cleaner Studio — EvenDisplay" />
-  <meta property="og:description" content="Drag 2 movable compensation bands over dim vertical strips, test across 50% gray and RGB, and export directly to EvenDisplay.app." />
+  <meta property="og:site_name" content="EvenDisplay" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:title" content="MacBook Screen Uniformity Test &amp; Calibration Studio — EvenDisplay" />
+  <meta property="og:description" content="Inspect 9 full-screen test colors, run an IPS image-retention sweep, align movable vertical compensation bands, and export directly to EvenDisplay.app." />
   <meta property="og:url" content="https://evendisplay.amulyagupta.in/studio.html" />
   <meta property="og:image" content="https://evendisplay.amulyagupta.in/assets/og-card.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="EvenDisplay MacBook screen uniformity diagnostic, IPS ghosting sweep, and reversible vertical band compensator preview" />
   <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="EvenDisplay Web Studio — Free MacBook Screen Uniformity Test" />
+  <meta name="twitter:description" content="Zero-install 9-color MacBook display test, IPS ghosting sweep, and movable vertical band calibration studio." />
+  <meta name="twitter:image" content="https://evendisplay.amulyagupta.in/assets/og-card.png" />
+  <meta name="twitter:image:alt" content="EvenDisplay MacBook screen uniformity diagnostic, IPS ghosting sweep, and reversible vertical band compensator preview" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "EvenDisplay Web Calibration Studio",
-    "url": "https://evendisplay.amulyagupta.in/studio.html",
-    "applicationCategory": "UtilitiesApplication",
-    "operatingSystem": "Any (Optimized for macOS browsers)",
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": "https://evendisplay.amulyagupta.in/studio.html#app",
+        "name": "EvenDisplay Web Calibration Studio",
+        "url": "https://evendisplay.amulyagupta.in/studio.html",
+        "applicationCategory": "UtilitiesApplication",
+        "browserRequirements": "Requires HTML5 Canvas and JavaScript",
+        "operatingSystem": "macOS, Any desktop browser",
+        "license": "https://opensource.org/licenses/MIT",
+        "image": "https://evendisplay.amulyagupta.in/assets/og-card.png",
+        "description": "Full-screen browser display tester with 9 solid uniformity colors, IPS image-retention sweep, and movable vertical band brightness/color compensator.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Amulya Gupta",
+          "url": "https://amulyagupta.in/"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "EvenDisplay",
+            "item": "https://evendisplay.amulyagupta.in/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Web Calibration Studio",
+            "item": "https://evendisplay.amulyagupta.in/studio.html"
+          }
+        ]
+      }
+    ]
   }
   </script>
+  <!-- SEO:END -->
   <style>
     :root {
       --bg: #0f1116;
@@ -389,23 +440,37 @@
       white-space: pre-wrap;
       user-select: text;
     }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    :focus-visible {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+    }
   </style>
 </head>
 <body>
-  <div id="stage">
+  <h1 class="sr-only">EvenDisplay Web Calibration Studio — MacBook Screen Uniformity Test, IPS Sweep &amp; Band Compensator</h1>
+  <main id="stage">
     <canvas id="main-canvas"></canvas>
     <div id="bands-layer"></div>
-  </div>
+  </main>
 
   <!-- Top Color Bar -->
-  <div id="top-bar" role="toolbar" aria-label="Test Colors">
-    <a class="home-pill" href="index.html" title="Back to EvenDisplay">
-      <img src="assets/icon.png" alt="" />
+  <nav id="top-bar" role="toolbar" aria-label="Test Colors">
+    <a class="home-pill" href="/" title="Back to EvenDisplay">
+      <img src="assets/icon-64.png" alt="EvenDisplay icon" width="18" height="18" decoding="async" />
       <span>EvenDisplay</span>
     </a>
     <div id="color-pills" class="row" style="flex-wrap:nowrap;"></div>
     <button id="btn-fullscreen" class="btn primary" style="border-radius:999px;margin-left:4px;">Fullscreen</button>
-  </div>
+  </nav>
 
   <!-- Floating Calibration Panel -->
   <div id="panel">
@@ -458,12 +523,12 @@
     <div class="section">
       <div class="section-title"><span>Global Blend &amp; White-Screen Surroundings</span></div>
       <div class="slider-line">
-        <span>Dim Outside</span>
+        <label for="rng-surround">Dim Outside</label>
         <input type="range" id="rng-surround" min="0" max="40" step="0.5" value="0" />
         <span class="mono" id="val-surround" style="text-align:right;">0.0%</span>
       </div>
       <div class="slider-line">
-        <span>Edge Feather</span>
+        <label for="rng-feather">Edge Feather</label>
         <input type="range" id="rng-feather" min="0" max="20" step="0.5" value="0" />
         <span class="mono" id="val-feather" style="text-align:right;">0.0 px</span>
       </div>
@@ -472,20 +537,22 @@
     <div class="section">
       <div class="section-title"><span>Sync with EvenDisplay.app &amp; IPS Sweep</span></div>
       <div class="row" style="margin-bottom:6px;">
-        <button id="btn-export-json" class="btn primary" style="flex:1;">Export .evendisplay.json</button>
+        <button id="btn-export-json" class="btn primary" style="flex:1;" data-track="export_profile_json">Export .evendisplay.json</button>
         <button id="btn-import-json" class="btn">Import JSON</button>
         <input type="file" id="file-import" accept=".json,application/json" style="display:none;" />
       </div>
       <div class="row">
-        <button id="btn-sweep-toggle" class="btn" style="flex:1;">Run White/Gray Sweep</button>
+        <button id="btn-sweep-toggle" class="btn" style="flex:1;" data-track="toggle_ips_sweep">Run White/Gray Sweep</button>
         <button id="btn-copy-cal" class="btn">Copy Summary</button>
       </div>
       <div id="export-box" class="export-box"></div>
+      <p class="note" style="margin-top:8px;">Need help diagnosing hardware vs. software? <a href="macbook-vertical-bands-guide.html" style="color:#60a5fa;text-decoration:underline;">Read the 2-minute guide</a>.</p>
     </div>
   </div>
 
   <button id="mini-restore">Show Controls (H) · Compare (C) · Colors (1–9)</button>
 
+  <script defer src="assets/analytics.js"></script>
   <script>
     (() => {
       const STORAGE_KEY = "EvenDisplay.Studio.v1";
