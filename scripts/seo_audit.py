@@ -344,6 +344,11 @@ def main() -> int:
             leaked = any(pat.search(text) for pat in secret_patterns)
             check(not leaked, f"{path}: no exposed secrets or placeholder tokens")
 
+            if path == "/":
+                check('id="waitlist-form"' in text and "formsubmit.co/ajax/amulyagupta2001@gmail.com" in text, "/: v2/v3 waitlist form wired to FormSubmit AJAX endpoint")
+                check("waitlist-email" in insp.labels_for, "/: waitlist email input has explicit <label>")
+                check("mailto:amulyagupta2001@gmail.com" in text, "/: waitlist includes direct mailto fallback")
+
         # 4. Headless Chrome Rendered DOM Check
         if CHROME.exists():
             for r in routes:
